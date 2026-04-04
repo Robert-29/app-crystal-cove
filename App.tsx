@@ -1,14 +1,14 @@
-import { ScreenContent } from 'components/ScreenContent';
 import { StatusBar } from 'expo-status-bar';
-
+import { View, Text } from 'react-native';
+import constants from 'expo-constants';
 import './global.css';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Home from './pages/Home';
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <ScreenContent title="Home" path="App.tsx"></ScreenContent>
+    <View style={{paddingTop: constants.statusBarHeight}} className="flex-1 items-center justify-center bg-green-600">
       <StatusBar style="auto" />
-    </SafeAreaProvider>
+      <Home />
+    </View>
   );
 }

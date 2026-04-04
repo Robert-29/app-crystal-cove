@@ -2,22 +2,33 @@ node_modules/
 .expo/
 dist/
 npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# certificates
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
 *.orig.*
+
+# builds
 web-build/
+ios/
+android/
 
-
-
-
-ios
-android
+# enviroment variables
+.env
+.env.*
+!.env.example
 
 # macOS
 .DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
 
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*

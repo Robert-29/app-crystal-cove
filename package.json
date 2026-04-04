@@ -1,5 +1,5 @@
 {
-  "name": "my-expo-app",
+  "name": "crystal-cove",
   "version": "1.0.0",
   "scripts": {
     "android": "expo start --android",
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "expo": "^54.0.0",
+    "expo-constants": "~18.0.13",
     "expo-status-bar": "~3.0.8",
     "nativewind": "latest",
     "react": "19.1.0",
