@@ -2,9 +2,88 @@ import React from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import Footer from '../components/Footer';
 
+// Datos estáticos exportados para usarlos en la pantalla de detalles
+export const ROOMS_DATA = [
+    {
+        id: 'suite-vista-mar',
+        title: 'Suite Vista al Mar',
+        description: 'Cama King size, balcón privado, jacuzzi y vistas panorámicas del océano. Ideal para una experiencia inolvidable.',
+        price: 299,
+        images: [
+            'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1522771731478-44fb10e9a48f?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=600&q=80'
+        ],
+        amenities: ['Mobiliario de lujo', 'Control climático', 'Wi-Fi de alta velocidad', 'Amenidades premium', 'Jacuzzi', 'Minibar']
+    },
+    {
+        id: 'habitacion-deluxe',
+        title: 'Habitación Deluxe',
+        description: 'Amplia y elegante, con 2 camas dobles y acceso directo a la piscina.',
+        price: 199,
+        images: [
+            'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80'
+        ],
+        amenities: ['2 camas dobles', 'Control climático', 'Wi-Fi de alta velocidad', 'Amenidades premium', 'TV 55"']
+    },
+    {
+        id: 'villa-premium',
+        title: 'Villa Premium',
+        description: 'Privacidad total con piscina privada, servicio de mayordomo y terraza. Un escape perfecto del mundo exterior.',
+        price: 499,
+        images: [
+            'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=600&q=80'
+        ],
+        amenities: ['Piscina privada', 'Mayordomo', 'Control climático', 'Wi-Fi de alta velocidad', 'Amenidades premium']
+    },
+    {
+        id: 'suite-presidencial',
+        title: 'Suite Presidencial',
+        description: 'El máximo lujo. Cuenta con sala de estar, comedor, dos habitaciones y terraza panorámica.',
+        price: 899,
+        images: [
+            'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=600&q=80'
+        ],
+        amenities: ['Sala y Comedor', 'Terraza panorámica', 'Control climático', 'Wi-Fi de alta velocidad', 'Servicio a la habitación 24/7']
+    },
+    {
+        id: 'habitacion-familiar',
+        title: 'Habitación Familiar',
+        description: 'Espacio ideal para familias. Incluye una cama King, literas para niños y consola de videojuegos.',
+        price: 259,
+        images: [
+            'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80'
+        ],
+        amenities: ['Cama King y Literas', 'Consola de videojuegos', 'Control climático', 'Wi-Fi de alta velocidad', 'Amenidades infantiles']
+    },
+    {
+        id: 'bungalow-agua',
+        title: 'Bungalow sobre el Agua',
+        description: 'Acceso directo al mar, piso de cristal, ducha al aire libre y servicio de habitación 24/7 en bote.',
+        price: 699,
+        images: [
+            'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=600&q=80'
+        ],
+        amenities: ['Acceso al mar', 'Piso de cristal', 'Ducha al aire libre', 'Control climático', 'Wi-Fi de alta velocidad']
+    }
+];
+
 export default function Habitaciones() {
+    const navigation = useNavigation<any>();
+
     return (
         <SafeAreaView className="flex-1 bg-white" edges={['top']}>
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -38,97 +117,26 @@ export default function Habitaciones() {
                     </View>
                 </View>
 
-                {/* LISTA DE HABITACIONES */}
+                {/* LISTA DE HABITACIONES DINÁMICA */}
                 <View className="px-4 pb-10 bg-gray-50 pt-8">
-                    {/* Habitación 1 */}
-                    <View className="w-full bg-white rounded-xl overflow-hidden mb-6 shadow-sm border border-gray-100">
-                        <Image source={{ uri: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80' }} className="w-full h-56" />
-                        <View className="p-5">
-                            <Text className="font-bold text-blue-950 text-xl mb-2">Suite Vista al Mar</Text>
-                            <Text className="text-gray-500 text-sm mb-4">Cama King size, balcón privado, jacuzzi y vistas panorámicas del océano.</Text>
-                            <View className="flex-row justify-between items-center">
-                                <Text className="text-green-600 font-bold text-lg">Desde $299/noche</Text>
-                                <TouchableOpacity className="bg-blue-950 px-4 py-2 rounded-full">
-                                    <Text className="text-white text-xs font-bold">Reservar</Text>
-                                </TouchableOpacity>
+                    {ROOMS_DATA.map((room) => (
+                        <View key={room.id} className="w-full bg-white rounded-xl overflow-hidden mb-6 shadow-sm border border-gray-100">
+                            <Image source={{ uri: room.images[0] }} className="w-full h-56" />
+                            <View className="p-5">
+                                <Text className="font-bold text-blue-950 text-xl mb-2">{room.title}</Text>
+                                <Text className="text-gray-500 text-sm mb-4">{room.description}</Text>
+                                <View className="flex-row justify-between items-center">
+                                    <Text className="text-green-600 font-bold text-lg">Desde ${room.price}/noche</Text>
+                                    <TouchableOpacity 
+                                        className="bg-blue-950 px-4 py-2 rounded-full"
+                                        onPress={() => navigation.navigate('RoomDetails', { roomId: room.id })}
+                                    >
+                                        <Text className="text-white text-xs font-bold">Reservar</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
-                    </View>
-
-                    {/* Habitación 2 */}
-                    <View className="w-full bg-white rounded-xl overflow-hidden mb-6 shadow-sm border border-gray-100">
-                        <Image source={{ uri: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=600&q=80' }} className="w-full h-56" />
-                        <View className="p-5">
-                            <Text className="font-bold text-blue-950 text-xl mb-2">Habitación Deluxe</Text>
-                            <Text className="text-gray-500 text-sm mb-4">Amplia y elegante, con 2 camas dobles y acceso directo a la piscina.</Text>
-                            <View className="flex-row justify-between items-center">
-                                <Text className="text-green-600 font-bold text-lg">Desde $199/noche</Text>
-                                <TouchableOpacity className="bg-blue-950 px-4 py-2 rounded-full">
-                                    <Text className="text-white text-xs font-bold">Reservar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-
-                    {/* Habitación 3 */}
-                    <View className="w-full bg-white rounded-xl overflow-hidden mb-6 shadow-sm border border-gray-100">
-                        <Image source={{ uri: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=600&q=80' }} className="w-full h-56" />
-                        <View className="p-5">
-                            <Text className="font-bold text-blue-950 text-xl mb-2">Villa Premium</Text>
-                            <Text className="text-gray-500 text-sm mb-4">Privacidad total con piscina privada, servicio de mayordomo y terraza.</Text>
-                            <View className="flex-row justify-between items-center">
-                                <Text className="text-green-600 font-bold text-lg">Desde $499/noche</Text>
-                                <TouchableOpacity className="bg-blue-950 px-4 py-2 rounded-full">
-                                    <Text className="text-white text-xs font-bold">Reservar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-
-                    {/* Habitación 4 */}
-                    <View className="w-full bg-white rounded-xl overflow-hidden mb-6 shadow-sm border border-gray-100">
-                        <Image source={{ uri: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=600&q=80' }} className="w-full h-56" />
-                        <View className="p-5">
-                            <Text className="font-bold text-blue-950 text-xl mb-2">Suite Presidencial</Text>
-                            <Text className="text-gray-500 text-sm mb-4">El máximo lujo. Cuenta con sala de estar, comedor, dos habitaciones y terraza panorámica.</Text>
-                            <View className="flex-row justify-between items-center">
-                                <Text className="text-green-600 font-bold text-lg">Desde $899/noche</Text>
-                                <TouchableOpacity className="bg-blue-950 px-4 py-2 rounded-full">
-                                    <Text className="text-white text-xs font-bold">Reservar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-
-                    {/* Habitación 5 */}
-                    <View className="w-full bg-white rounded-xl overflow-hidden mb-6 shadow-sm border border-gray-100">
-                        <Image source={{ uri: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=600&q=80' }} className="w-full h-56" />
-                        <View className="p-5">
-                            <Text className="font-bold text-blue-950 text-xl mb-2">Habitación Familiar</Text>
-                            <Text className="text-gray-500 text-sm mb-4">Espacio ideal para familias. Incluye una cama King, literas para niños y consola de videojuegos.</Text>
-                            <View className="flex-row justify-between items-center">
-                                <Text className="text-green-600 font-bold text-lg">Desde $259/noche</Text>
-                                <TouchableOpacity className="bg-blue-950 px-4 py-2 rounded-full">
-                                    <Text className="text-white text-xs font-bold">Reservar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-
-                    {/* Habitación 6 */}
-                    <View className="w-full bg-white rounded-xl overflow-hidden mb-6 shadow-sm border border-gray-100">
-                        <Image source={{ uri: 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=600&q=80' }} className="w-full h-56" />
-                        <View className="p-5">
-                            <Text className="font-bold text-blue-950 text-xl mb-2">Bungalow sobre el Agua</Text>
-                            <Text className="text-gray-500 text-sm mb-4">Acceso directo al mar, piso de cristal, ducha al aire libre y servicio de habitación 24/7 en bote.</Text>
-                            <View className="flex-row justify-between items-center">
-                                <Text className="text-green-600 font-bold text-lg">Desde $699/noche</Text>
-                                <TouchableOpacity className="bg-blue-950 px-4 py-2 rounded-full">
-                                    <Text className="text-white text-xs font-bold">Reservar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
+                    ))}
                 </View>
 
                 {/* FOOTER */}

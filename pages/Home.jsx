@@ -1,18 +1,17 @@
 import React, { useRef } from 'react';
-import { View, Text, ScrollView, ImageBackground, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Footer from '../components/Footer';
 
-const { width } = Dimensions.get('window');
-
 export default function Home() {
+    const { width, height } = useWindowDimensions();
     const galleryRef = useRef(null);
     const scrollPosition = useRef(0);
+    const scrollViewRef = useRef(null);
 
     const scrollGallery = (direction) => {
         if (galleryRef.current) {
-            const itemWidth = width - 80 + 16; // Image width + right margin
+            const itemWidth = width - 80 + 16;
             if (direction === 'left') {
                 scrollPosition.current = Math.max(0, scrollPosition.current - itemWidth);
             } else {
@@ -23,19 +22,112 @@ export default function Home() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                {/* HERO SECTION */}
-                <ImageBackground 
-                    source={{ uri: 'https://images.unsplash.com/photo-1542314831-c6a4d1409e1e?auto=format&fit=crop&w=800&q=80' }} 
-                    className="w-full h-96 justify-center items-center relative"
-                    resizeMode="cover"
-                >
-                    <View className="absolute inset-0 bg-black/40" />
-                    <Text className="text-center text-white text-3xl font-serif font-bold px-4 leading-tight">
-                        EN{`\n`}CRYSTAL COVE{`\n`}ENCUENTRA{`\n`}EXPERIENCIA ÚNICA
-                    </Text>
-                </ImageBackground>
+        <View style={{ flex: 1 }}>
+            <ScrollView ref={scrollViewRef} style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+
+                {/* HERO FULLSCREEN */}
+                <View style={{ width, height, backgroundColor: '#0f2557' }}>
+                    {/* Imagen de fondo */}
+                    <Image
+                        source={{ uri: 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800' }}
+                        style={{ position: 'absolute', top: 0, left: 0, width: width, height: height }}
+                        resizeMode="cover"
+                        onError={(e) => console.log('Image error:', e.nativeEvent.error)}
+                    />
+
+                    {/* Overlay oscuro */}
+                    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.42)' }} />
+
+                    {/* Contenido centrado */}
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 }}>
+                        {/* Badge de ubicación */}
+                        <View style={{
+                            borderWidth: 1,
+                            borderColor: 'rgba(255,255,255,0.7)',
+                            paddingHorizontal: 16,
+                            paddingVertical: 6,
+                            borderRadius: 999,
+                            marginBottom: 24
+                        }}>
+                            <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 11, letterSpacing: 3, fontWeight: '600', textTransform: 'uppercase' }}>
+                                Cancún, México
+                            </Text>
+                        </View>
+
+                        {/* Nombre del hotel */}
+                        <Text style={{
+                            color: 'white',
+                            fontSize: 48,
+                            fontWeight: '800',
+                            textAlign: 'center',
+                            letterSpacing: 4,
+                            textShadowColor: 'rgba(0,0,0,0.6)',
+                            textShadowOffset: { width: 0, height: 2 },
+                            textShadowRadius: 10,
+                            marginBottom: 4
+                        }}>
+                            CRYSTAL
+                        </Text>
+                        <Text style={{
+                            color: 'white',
+                            fontSize: 48,
+                            fontWeight: '800',
+                            textAlign: 'center',
+                            letterSpacing: 4,
+                            textShadowColor: 'rgba(0,0,0,0.6)',
+                            textShadowOffset: { width: 0, height: 2 },
+                            textShadowRadius: 10,
+                            marginBottom: 24
+                        }}>
+                            COVE
+                        </Text>
+
+                        {/* Separador decorativo */}
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+                            <View style={{ width: 40, height: 1, backgroundColor: 'rgba(255,255,255,0.5)' }} />
+                            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.7)', marginHorizontal: 8 }} />
+                            <View style={{ width: 40, height: 1, backgroundColor: 'rgba(255,255,255,0.5)' }} />
+                        </View>
+
+                        {/* Slogan */}
+                        <Text style={{
+                            color: 'rgba(255,255,255,0.85)',
+                            fontSize: 15,
+                            textAlign: 'center',
+                            letterSpacing: 1,
+                            marginBottom: 44,
+                            fontStyle: 'italic',
+                        }}>
+                            Encuentra tu experiencia única
+                        </Text>
+
+                        {/* Botón CTA */}
+                        <TouchableOpacity
+                            style={{
+                                backgroundColor: 'white',
+                                paddingHorizontal: 36,
+                                paddingVertical: 14,
+                                borderRadius: 999,
+                                shadowColor: '#000',
+                                shadowOffset: { width: 0, height: 4 },
+                                shadowOpacity: 0.3,
+                                shadowRadius: 6,
+                                elevation: 6,
+                            }}
+                            onPress={() => scrollViewRef.current?.scrollTo({ y: height, animated: true })}
+                        >
+                            <Text style={{ color: '#172554', fontWeight: 'bold', fontSize: 15, letterSpacing: 0.5 }}>
+                                Descubrir más
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Indicador de scroll */}
+                    <View style={{ position: 'absolute', bottom: 32, left: 0, right: 0, alignItems: 'center' }}>
+                        <Ionicons name="chevron-down" size={28} color="rgba(255,255,255,0.7)" />
+                    </View>
+                </View>
+
 
                 {/* SERVICIOS Y AMENIDADES */}
                 <View className="py-10 px-4 items-center">
@@ -230,6 +322,6 @@ export default function Home() {
                 <Footer />
 
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }

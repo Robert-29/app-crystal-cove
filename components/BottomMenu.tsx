@@ -6,9 +6,21 @@ import Habitaciones from '../pages/Habitaciones';
 import Actividades from '../pages/Actividades';
 import Reservas from '../pages/Reservas';
 import Perfil from '../pages/Perfil';
+import RoomDetails from '../pages/RoomDetails';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+function HabitacionesStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="HabitacionesMain" component={Habitaciones} />
+      <Stack.Screen name="RoomDetails" component={RoomDetails} />
+    </Stack.Navigator>
+  );
+}
 
 // Placeholder screens for other tabs
 function PlaceholderScreen({ route }: { route: any }) {
@@ -46,7 +58,7 @@ export default function BottomMenu() {
       })}
     >
       <Tab.Screen name="Inicio" component={Home} />
-      <Tab.Screen name="Habitaciones" component={Habitaciones} />
+      <Tab.Screen name="Habitaciones" component={HabitacionesStack} />
       <Tab.Screen name="Actividades" component={Actividades} />
       <Tab.Screen name="Reservas" component={Reservas} />
       <Tab.Screen name="Perfil" component={Perfil} />
