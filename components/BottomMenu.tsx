@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import Home from '../pages/Home';
 import Habitaciones from '../pages/Habitaciones';
+import Actividades from '../pages/Actividades';
 import React from 'react';
 
 const Tab = createBottomTabNavigator();
@@ -44,7 +45,7 @@ export default function BottomMenu() {
     >
       <Tab.Screen name="Inicio" component={Home} />
       <Tab.Screen name="Habitaciones" component={Habitaciones} />
-      <Tab.Screen name="Actividades" component={PlaceholderScreen} />
+      <Tab.Screen name="Actividades" component={Actividades} />
       <Tab.Screen name="Reservas" component={PlaceholderScreen} />
       <Tab.Screen name="Perfil" component={PlaceholderScreen} />
     </Tab.Navigator>
