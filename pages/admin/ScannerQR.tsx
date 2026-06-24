@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { CameraView, Camera } from 'expo-camera';
 import { supabase } from '../../lib/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ export default function ScannerQR() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [reservaInfo, setReservaInfo] = useState<any>(null);
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -23,21 +24,46 @@ export default function ScannerQR() {
     setLoading(true);
     
     try {
-      const { data: responseData, error } = await supabase.rpc('validate_qr_code', { p_codigo_qr: data });
+      // Intentar buscar la reservación por código QR
+      const { data: reserva, error } = await supabase
+        .from('reservaciones')
+        .select(`
+          *,
+          perfiles (nombre_completo, telefono)
+        `)
+        .eq('codigo_qr', data)
+        .single();
       
-      if (error) {
-        Alert.alert('Error del Servidor', error.message);
+      if (error || !reserva) {
+        Alert.alert('No encontrado', 'No se encontró ninguna reservación con este código QR.');
       } else {
-        if (responseData.success) {
-          Alert.alert('Éxito', responseData.message);
-        } else {
-          Alert.alert('Aviso', responseData.message);
-        }
+        setReservaInfo(reserva);
       }
     } catch (err: any) {
       Alert.alert('Error', err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const actualizarEstado = async (nuevoEstado: string) => {
+    if (!reservaInfo) return;
+    setLoading(true);
+    try {
+        const { error } = await supabase
+            .from('reservaciones')
+            .update({ estado: nuevoEstado })
+            .eq('id', reservaInfo.id);
+        
+        if (error) throw error;
+        
+        Alert.alert('Éxito', `La reservación ha sido marcada como: ${nuevoEstado}`);
+        setReservaInfo(null);
+        setScanned(false);
+    } catch (err: any) {
+        Alert.alert('Error al actualizar', err.message);
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -59,18 +85,68 @@ export default function ScannerQR() {
           style={StyleSheet.absoluteFillObject}
         />
         <View className="absolute bottom-10 left-0 right-0 items-center px-4">
-            <View className="bg-white/90 p-4 rounded-xl w-full shadow-lg">
+            <View className="bg-white p-6 rounded-3xl w-full shadow-2xl border border-gray-100">
                 {loading ? (
                     <View className="items-center py-4">
                         <ActivityIndicator size="large" color="#172554" />
-                        <Text className="mt-2 text-gray-700 font-bold text-lg">Validando código...</Text>
+                        <Text className="mt-4 text-blue-950 font-bold text-lg">Procesando...</Text>
+                    </View>
+                ) : reservaInfo ? (
+                    <View>
+                        <Text className="text-xl font-serif text-blue-950 font-bold mb-4 text-center">Detalles de Reserva</Text>
+                        
+                        <View className="bg-gray-50 p-4 rounded-xl mb-4">
+                            <Text className="text-sm text-gray-500 mb-1">Nombre: <Text className="font-bold text-gray-800">{reservaInfo.perfiles?.nombre_completo || 'Huésped'}</Text></Text>
+                            <Text className="text-sm text-gray-500 mb-1">Teléfono: <Text className="font-bold text-gray-800">{reservaInfo.perfiles?.telefono || 'No registrado'}</Text></Text>
+                            <Text className="text-sm text-gray-500 mb-1">ID Reserva: <Text className="font-bold text-gray-800">{reservaInfo.id.substring(0, 8)}...</Text></Text>
+                            <Text className="text-sm text-gray-500 mb-1">Check-In: <Text className="font-bold text-gray-800">{reservaInfo.fecha_entrada}</Text></Text>
+                            <Text className="text-sm text-gray-500 mb-1">Check-Out: <Text className="font-bold text-gray-800">{reservaInfo.fecha_salida}</Text></Text>
+                            <Text className="text-sm text-gray-500">Estado Actual: <Text className="font-bold text-blue-600 uppercase">{reservaInfo.estado}</Text></Text>
+                        </View>
+
+                        <TouchableOpacity 
+                            className="bg-green-600 py-4 rounded-xl mb-3 shadow-sm"
+                            onPress={() => actualizarEstado('en_estancia')}
+                        >
+                            <Text className="text-white text-center font-bold">Marcar "En Estancia"</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity 
+                            className="bg-red-500 py-4 rounded-xl mb-3 shadow-sm"
+                            onPress={() => actualizarEstado('cancelada')}
+                        >
+                            <Text className="text-white text-center font-bold">Cancelar Reserva</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity 
+                            className="bg-gray-200 py-4 rounded-xl"
+                            onPress={() => {
+                                setReservaInfo(null);
+                                setScanned(false);
+                            }}
+                        >
+                            <Text className="text-gray-700 text-center font-bold">Escanear Otro Código</Text>
+                        </TouchableOpacity>
                     </View>
                 ) : scanned ? (
-                    <Button title={'Toca para Escanear de Nuevo'} onPress={() => setScanned(false)} color="#172554" />
+                    <View>
+                        <Text className="text-center text-gray-800 mb-4 font-bold text-lg">Código no válido</Text>
+                        <TouchableOpacity 
+                            className="bg-blue-950 py-4 rounded-xl shadow-sm"
+                            onPress={() => setScanned(false)}
+                        >
+                            <Text className="text-white text-center font-bold">Intentar de nuevo</Text>
+                        </TouchableOpacity>
+                    </View>
                 ) : (
-                    <Text className="text-center text-lg font-bold text-gray-800">
-                        Apunta la cámara a un código QR
-                    </Text>
+                    <View className="py-4">
+                        <Text className="text-center text-lg font-bold text-blue-950 mb-2">
+                            Apunta la cámara a un código QR
+                        </Text>
+                        <Text className="text-center text-sm text-gray-500">
+                            El escaneo es automático
+                        </Text>
+                    </View>
                 )}
             </View>
         </View>

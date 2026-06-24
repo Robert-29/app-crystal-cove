@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native'; // Force rebuild
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Footer from '../components/Footer';
@@ -15,16 +15,44 @@ export default function Reservas() {
     const navigation = useNavigation<any>();
     const [reservas, setReservas] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<'confirmadas' | 'en_estancia' | 'pasadas' | 'canceladas'>('confirmadas');
 
     // Referencias para cada ticket para poder capturarlos
     const viewShotRefs = useRef<{ [key: string]: any }>({});
 
     useEffect(() => {
+        let subscription: any;
+
         if (session && user) {
             fetchReservas();
+
+            // Suscribirse a cambios en tiempo real
+            subscription = supabase
+                .channel('mis_reservaciones')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'reservaciones',
+                        filter: `id_usuario=eq.${user.id}`
+                    },
+                    () => {
+                        // Recargar reservaciones cuando haya un cambio (insert, update, delete)
+                        fetchReservas();
+                    }
+                )
+                .subscribe();
+
         } else {
             setLoading(false);
         }
+
+        return () => {
+            if (subscription) {
+                supabase.removeChannel(subscription);
+            }
+        };
     }, [session, user]);
 
     const fetchReservas = async () => {
@@ -121,6 +149,18 @@ export default function Reservas() {
     }
 
     // ESTADO: CON RESERVACIONES
+    
+    // Filtrar reservaciones según la pestaña
+    const today = new Date().toISOString().split('T')[0];
+    const filteredReservas = reservas.filter(reserva => {
+        const isPasada = reserva.fecha_salida < today;
+        if (activeTab === 'canceladas') return reserva.estado === 'cancelada';
+        if (activeTab === 'pasadas') return isPasada && reserva.estado !== 'cancelada';
+        if (activeTab === 'en_estancia') return reserva.estado === 'en_estancia' && !isPasada;
+        if (activeTab === 'confirmadas') return reserva.estado === 'confirmada' && !isPasada;
+        return false;
+    });
+
     return (
         <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
             {/* Header Mínimo */}
@@ -129,8 +169,43 @@ export default function Reservas() {
                 <Text className="text-gray-500 text-sm">Presenta este código al llegar al hotel</Text>
             </View>
 
+            {/* Pestañas (Tabs) */}
+            <View className="flex-row bg-white border-b border-gray-200">
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="w-full">
+                    <TouchableOpacity 
+                        className={`px-4 py-3 border-b-2 ${activeTab === 'confirmadas' ? 'border-blue-950' : 'border-transparent'}`}
+                        onPress={() => setActiveTab('confirmadas')}
+                    >
+                        <Text className={`font-bold ${activeTab === 'confirmadas' ? 'text-blue-950' : 'text-gray-400'}`}>Confirmadas</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        className={`px-4 py-3 border-b-2 ${activeTab === 'en_estancia' ? 'border-blue-950' : 'border-transparent'}`}
+                        onPress={() => setActiveTab('en_estancia')}
+                    >
+                        <Text className={`font-bold ${activeTab === 'en_estancia' ? 'text-blue-950' : 'text-gray-400'}`}>En Estancia</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        className={`px-4 py-3 border-b-2 ${activeTab === 'pasadas' ? 'border-blue-950' : 'border-transparent'}`}
+                        onPress={() => setActiveTab('pasadas')}
+                    >
+                        <Text className={`font-bold ${activeTab === 'pasadas' ? 'text-blue-950' : 'text-gray-400'}`}>Pasadas</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        className={`px-4 py-3 border-b-2 ${activeTab === 'canceladas' ? 'border-blue-950' : 'border-transparent'}`}
+                        onPress={() => setActiveTab('canceladas')}
+                    >
+                        <Text className={`font-bold ${activeTab === 'canceladas' ? 'text-blue-950' : 'text-gray-400'}`}>Canceladas</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            </View>
+
             <ScrollView className="flex-1 px-4 pt-6 pb-20" showsVerticalScrollIndicator={false}>
-                {reservas.map((reserva) => {
+                {filteredReservas.length === 0 ? (
+                    <View className="items-center justify-center mt-10">
+                        <Text className="text-gray-500 text-center">No hay reservaciones en esta sección.</Text>
+                    </View>
+                ) : (
+                    filteredReservas.map((reserva) => {
                     const fullName = profile?.nombre_completo || 'Huésped';
                     const email = user?.email || 'Sin correo';
                     const phone = profile?.telefono || 'No registrado';
@@ -207,7 +282,7 @@ export default function Reservas() {
                                         <Text className="text-[10px] text-gray-400 text-center mt-2">Escanea este código al llegar a recepción</Text>
                                     </View>
                                 </View>
-                            </View>
+                            </ViewShot>
 
                             {/* Botón de descarga fuera del ViewShot */}
                             <TouchableOpacity 
@@ -219,7 +294,7 @@ export default function Reservas() {
                             </TouchableOpacity>
                         </View>
                     );
-                })}
+                }))}
             </ScrollView>
         </SafeAreaView>
     );
