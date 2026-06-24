@@ -36,6 +36,17 @@ function AuthStack() {
   );
 }
 
+import AdminUserDetails from '../pages/admin/AdminUserDetails';
+
+function DashboardStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="DashboardMain" component={Dashboard} />
+      <Stack.Screen name="AdminUserDetails" component={AdminUserDetails} />
+    </Stack.Navigator>
+  );
+}
+
 export default function BottomMenu() {
   const { session, role, isLoading } = useAuth();
 
@@ -71,7 +82,7 @@ export default function BottomMenu() {
       {session && (role === 'administrador' || role === 'staff') ? (
         // ADMIN / HOTEL STAFF TABS
         <>
-          <Tab.Screen name="Dashboard" component={Dashboard} />
+          <Tab.Screen name="Dashboard" component={DashboardStack} />
           <Tab.Screen name="Escáner QR" component={ScannerQR} />
           <Tab.Screen name="Perfil" component={Perfil} />
         </>
