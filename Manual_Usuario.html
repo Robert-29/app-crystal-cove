@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario: Crystal Cove Resort</title>
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f9fafb; }
+        .container { background-color: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h1 { color: #1e3a8a; text-align: center; font-size: 2.5rem; margin-bottom: 10px; }
+        h2 { color: #1e40af; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-top: 40px; }
+        img { max-width: 100%; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .hero-img { width: 100%; height: 300px; object-fit: cover; }
+        .mockup-img { display: block; margin: 20px auto; max-width: 400px; }
+        .note { background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin: 20px 0; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid img { margin: 0; height: 200px; object-fit: cover; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://images.unsplash.com/photo-1542314831-c6a4d1409e1e?auto=format&fit=crop&w=1200&q=80" alt="Crystal Cove Resort" class="hero-img">
+        
+        <h1>Manual de Usuario</h1>
+        <p style="text-align: center; font-size: 1.2rem; color: #6b7280; margin-bottom: 40px;">Crystal Cove Resort App Oficial</p>
+
+        <p>¡Bienvenido a la aplicación oficial de <strong>Crystal Cove Resort</strong>! Este manual te guiará paso a paso para utilizar todas las funcionalidades del sistema, tanto si eres un huésped buscando la escapada perfecta, como si eres un administrador gestionando el complejo.</p>
+
+        <h2>1. Instalación de la Aplicación</h2>
+        <p>Dado que esta aplicación se distribuye de forma privada (APK):</p>
+        <ol>
+            <li>Descarga el archivo <code>.apk</code> proporcionado por la administración.</li>
+            <li>Abre el archivo descargado en tu teléfono Android.</li>
+            <li>Si el teléfono te solicita permisos para "Instalar aplicaciones de orígenes desconocidos", acepta y continúa.</li>
+            <li>Una vez instalada, busca el ícono dorado de <strong>Crystal Cove</strong> en tu menú y abre la aplicación.</li>
+        </ol>
+
+        <img src="file:///C:/Users/BlackPavilionDos/.gemini/antigravity-ide/brain/e10d95f7-f9ad-4b08-bcd5-31b8a9888577/mockup_app_crystal_cove_1782315099304.png" alt="Mockup de la App" class="mockup-img">
+
+        <h2>2. Registro e Inicio de Sesión</h2>
+        <p>Al abrir la aplicación por primera vez, verás la pantalla de bienvenida.</p>
+        <ul>
+            <li><strong>Si eres un usuario nuevo:</strong> Toca en "¿No tienes cuenta? Regístrate aquí". Llena el formulario con tu correo, una contraseña segura, tu nombre completo y número de teléfono.</li>
+            <li><strong>Si ya tienes cuenta:</strong> Ingresa tu correo y contraseña en la pantalla principal y presiona "Iniciar Sesión".</li>
+        </ul>
+        <div class="note">
+            <strong>Nota:</strong> La aplicación mantendrá tu sesión abierta para mayor comodidad hasta que decidas cerrar sesión desde tu Perfil.
+        </div>
+
+        <h2>3. Explorando el Resort (Huéspedes)</h2>
+        <p>Una vez dentro, entrarás al <strong>Inicio</strong>.</p>
+        <div class="grid">
+            <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=600&q=80" alt="Actividad">
+            <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80" alt="Spa">
+        </div>
+        <ul>
+            <li><strong>Navegación Inferior:</strong> Utiliza la barra de navegación en la parte inferior para moverte entre las 4 secciones principales: <em>Inicio, Habitaciones, Reservas y Perfil.</em></li>
+            <li><strong>Inicio:</strong> Aquí encontrarás galerías de imágenes de nuestras instalaciones, reseñas de otros huéspedes y acceso rápido a las actividades extra del resort (spa, yates, buceo, etc.).</li>
+            <li><strong>Perfil:</strong> En esta pestaña puedes revisar tus datos, modificar tu nombre y teléfono, y cerrar sesión cuando lo desees.</li>
+        </ul>
+
+        <h2>4. Reserva y Pago de Habitaciones</h2>
+        <p>¡El proceso de reservar es completamente digital!</p>
+        <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80" alt="Suite Vista al Mar">
+        <ol>
+            <li>Dirígete a la pestaña de <strong>Habitaciones</strong>.</li>
+            <li>Explora nuestro catálogo de suites y villas. Puedes ver fotos, descripción, precio por noche y amenidades incluidas.</li>
+            <li>Toca el botón <strong>Reservar</strong> en la habitación de tu preferencia.</li>
+            <li>Revisa los detalles de tu elección. Al final de la pantalla verás el botón azul "Confirmar Reserva y Pagar".</li>
+            <li><strong>Pago Seguro:</strong> Se abrirá la pasarela de pagos de <em>Stripe</em>. Ingresa los datos de tu tarjeta de crédito o débito de forma totalmente segura.</li>
+            <li>Al procesarse el pago, la aplicación te confirmará el éxito y creará oficialmente tu reservación.</li>
+        </ol>
+
+        <h2>5. Tus Reservas y Código QR</h2>
+        <p>Para ingresar al resort no necesitas llaves ni papeles, tu celular es tu acceso.</p>
+        <ol>
+            <li>Ve a la pestaña de <strong>Reservas</strong>.</li>
+            <li>Allí verás una lista con todas las reservaciones que has pagado.</li>
+            <li>Al tocar tu reservación activa, la pantalla se iluminará y mostrará un <strong>Código QR</strong>.</li>
+            <li>Muestra este código QR en la entrada o recepción del hotel para que te den acceso inmediato a tus instalaciones.</li>
+        </ol>
+
+        <h2>6. Modo Administrador (Recepción y Dashboard)</h2>
+        <p>El sistema cuenta con herramientas exclusivas si el usuario que inicia sesión tiene el rol de administrador.</p>
+        
+        <h3>El Lector QR (Recepción)</h3>
+        <ol>
+            <li>En la pestaña de Inicio o en el menú especial, accede a la herramienta <strong>Escáner QR</strong>.</li>
+            <li>Concede permiso a la cámara de tu teléfono.</li>
+            <li>Apunta la cámara al Código QR en la pantalla del teléfono del huésped.</li>
+            <li>El sistema verificará instantáneamente la base de datos y te mostrará la información de la reserva.</li>
+            <li>Podrás presionar <strong>"Marcar En Estancia"</strong> para registrar el Check-in, o <strong>"Cancelar Reserva"</strong>.</li>
+        </ol>
+
+        <h3>Dashboard Analítico (Gerencia)</h3>
+        <ul>
+            <li><strong>Métricas Clave:</strong> Observa el número total de reservaciones, ingresos financieros y usuarios registrados.</li>
+            <li><strong>Ocupación:</strong> Revisa gráficas que muestran el porcentaje de habitaciones disponibles contra ocupadas.</li>
+            <li><strong>Tiempo Real:</strong> Gracias a la conexión con <em>Supabase</em>, si un cliente paga una reserva, los números y las gráficas del dashboard se actualizarán automáticamente.</li>
+        </ul>
+        
+        <p style="text-align: center; margin-top: 40px; color: #9ca3af; font-size: 0.9rem;">
+            &copy; 2026 Crystal Cove Resort. Documentación Oficial.
+        </p>
+    </div>
+</body>
+</html>

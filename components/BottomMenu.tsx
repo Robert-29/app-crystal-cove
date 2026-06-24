@@ -47,13 +47,16 @@ function DashboardStack() {
   );
 }
 
+import { useColorScheme } from 'nativewind';
+
 export default function BottomMenu() {
   const { session, role, isLoading } = useAuth();
+  const { colorScheme } = useColorScheme();
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#172554" />
+      <View className="flex-1 items-center justify-center bg-white dark:bg-dark-surface">
+        <ActivityIndicator size="large" color="#d4af37" />
       </View>
     );
   }
@@ -74,8 +77,12 @@ export default function BottomMenu() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#172554', // blue-950
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: colorScheme === 'dark' ? '#d4af37' : '#172554', // gold or dark blue
+        tabBarInactiveTintColor: '#6b7280', // gray-500
+        tabBarStyle: {
+          backgroundColor: colorScheme === 'dark' ? '#0a0a0a' : '#ffffff',
+          borderTopColor: colorScheme === 'dark' ? '#262626' : '#e5e7eb',
+        },
         headerShown: false,
       })}
     >

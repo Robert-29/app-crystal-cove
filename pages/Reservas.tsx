@@ -74,9 +74,9 @@ export default function Reservas() {
     // ESTADO: CARGANDO
     if (loading) {
         return (
-            <SafeAreaView className="flex-1 bg-gray-50 justify-center items-center">
-                <ActivityIndicator size="large" color="#172554" />
-                <Text className="mt-4 text-blue-950 font-bold">Cargando reservaciones...</Text>
+            <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-bg justify-center items-center">
+                <ActivityIndicator size="large" color="#d4af37" />
+                <Text className="mt-4 text-blue-950 dark:text-gold font-bold font-sans">Cargando reservaciones...</Text>
             </SafeAreaView>
         );
     }
@@ -85,13 +85,13 @@ export default function Reservas() {
     // pero lo dejamos como protección adicional).
     if (!session) {
         return (
-            <SafeAreaView className="flex-1 bg-white flex flex-col" edges={['top']}>
+            <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-bg flex flex-col" edges={['top']}>
                 <View className="flex-1 justify-center items-center px-6">
-                    <View className="w-24 h-24 bg-blue-50 rounded-full justify-center items-center mb-6">
-                        <Ionicons name="lock-closed-outline" size={48} color="#172554" />
+                    <View className="w-24 h-24 bg-gray-100 dark:bg-dark-surfaceAlt rounded-full justify-center items-center mb-6">
+                        <Ionicons name="lock-closed-outline" size={48} color="#d4af37" />
                     </View>
-                    <Text className="text-2xl font-serif text-blue-950 text-center mb-4">Mis Reservaciones</Text>
-                    <Text className="text-center text-gray-500 mb-8 px-4">Inicia sesión para ver tus reservaciones.</Text>
+                    <Text className="text-2xl font-serif text-blue-950 dark:text-gold text-center mb-4">Mis Reservaciones</Text>
+                    <Text className="text-center text-gray-500 dark:text-gray-400 mb-8 px-4 font-sans">Inicia sesión para ver tus reservaciones.</Text>
                 </View>
                 <Footer />
             </SafeAreaView>
@@ -101,17 +101,17 @@ export default function Reservas() {
     // ESTADO: SIN RESERVACIONES
     if (reservas.length === 0) {
         return (
-            <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
+            <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-bg" edges={['top']}>
                 <View className="flex-1 justify-center items-center px-6">
                     <Ionicons name="calendar-outline" size={64} color="#9ca3af" className="mb-4" />
-                    <Text className="text-xl font-bold text-gray-700 mb-2 text-center">Aún no tienes reservaciones</Text>
-                    <Text className="text-gray-500 text-center mb-8">Planea tu próxima escapada con nosotros.</Text>
+                    <Text className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-2 text-center font-sans">Aún no tienes reservaciones</Text>
+                    <Text className="text-gray-500 dark:text-gray-400 text-center mb-8 font-sans">Planea tu próxima escapada con nosotros.</Text>
                     
                     <TouchableOpacity 
-                        className="bg-blue-950 px-8 py-4 rounded-xl shadow-md w-full"
+                        className="bg-gold-dark px-8 py-4 rounded-xl shadow-md w-full"
                         onPress={() => navigation.navigate('Habitaciones')}
                     >
-                        <Text className="text-white text-center font-bold text-base">Ver Habitaciones</Text>
+                        <Text className="text-gray-800 dark:text-white text-center font-bold text-base font-sans">Ver Habitaciones</Text>
                     </TouchableOpacity>
                 </View>
                 <Footer />
@@ -135,37 +135,37 @@ export default function Reservas() {
     return (
         <SafeAreaView className="flex-1 bg-gray-100" edges={['top']}>
             {/* Header Mínimo */}
-            <View className="bg-white py-4 px-6 shadow-sm z-10">
-                <Text className="text-2xl font-serif font-bold text-blue-950">Mis Tickets</Text>
-                <Text className="text-gray-500 text-sm">Presenta este código al llegar al hotel</Text>
+            <View className="bg-white dark:bg-dark-surface py-4 px-6 shadow-sm z-10">
+                <Text className="text-2xl font-serif font-bold text-blue-950 dark:text-gold">Mis Tickets</Text>
+                <Text className="text-gray-500 dark:text-gray-400 text-sm font-sans">Presenta este código al llegar al hotel</Text>
             </View>
 
             {/* Pestañas (Tabs) */}
-            <View className="flex-row bg-white border-b border-gray-200">
+            <View className="flex-row bg-white dark:bg-dark-surface border-b border-gray-200 dark:border-dark-surfaceAlt">
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} className="w-full">
                     <TouchableOpacity 
-                        className={`px-4 py-3 border-b-2 ${activeTab === 'confirmadas' ? 'border-blue-950' : 'border-transparent'}`}
+                        className={`px-4 py-3 border-b-2 ${activeTab === 'confirmadas' ? 'border-blue-950 dark:border-gold' : 'border-transparent'}`}
                         onPress={() => setActiveTab('confirmadas')}
                     >
-                        <Text className={`font-bold ${activeTab === 'confirmadas' ? 'text-blue-950' : 'text-gray-400'}`}>Confirmadas</Text>
+                        <Text className={`font-bold ${activeTab === 'confirmadas' ? 'text-blue-950 dark:text-gold' : 'text-gray-500 dark:text-gray-400'}`}>Confirmadas</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
-                        className={`px-4 py-3 border-b-2 ${activeTab === 'en_estancia' ? 'border-blue-950' : 'border-transparent'}`}
+                        className={`px-4 py-3 border-b-2 ${activeTab === 'en_estancia' ? 'border-blue-950 dark:border-gold' : 'border-transparent'}`}
                         onPress={() => setActiveTab('en_estancia')}
                     >
-                        <Text className={`font-bold ${activeTab === 'en_estancia' ? 'text-blue-950' : 'text-gray-400'}`}>En Estancia</Text>
+                        <Text className={`font-bold ${activeTab === 'en_estancia' ? 'text-blue-950 dark:text-gold' : 'text-gray-500 dark:text-gray-400'}`}>En Estancia</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
-                        className={`px-4 py-3 border-b-2 ${activeTab === 'pasadas' ? 'border-blue-950' : 'border-transparent'}`}
+                        className={`px-4 py-3 border-b-2 ${activeTab === 'pasadas' ? 'border-blue-950 dark:border-gold' : 'border-transparent'}`}
                         onPress={() => setActiveTab('pasadas')}
                     >
-                        <Text className={`font-bold ${activeTab === 'pasadas' ? 'text-blue-950' : 'text-gray-400'}`}>Pasadas</Text>
+                        <Text className={`font-bold ${activeTab === 'pasadas' ? 'text-blue-950 dark:text-gold' : 'text-gray-500 dark:text-gray-400'}`}>Pasadas</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
-                        className={`px-4 py-3 border-b-2 ${activeTab === 'canceladas' ? 'border-blue-950' : 'border-transparent'}`}
+                        className={`px-4 py-3 border-b-2 ${activeTab === 'canceladas' ? 'border-blue-950 dark:border-gold' : 'border-transparent'}`}
                         onPress={() => setActiveTab('canceladas')}
                     >
-                        <Text className={`font-bold ${activeTab === 'canceladas' ? 'text-blue-950' : 'text-gray-400'}`}>Canceladas</Text>
+                        <Text className={`font-bold ${activeTab === 'canceladas' ? 'text-blue-950 dark:text-gold' : 'text-gray-500 dark:text-gray-400'}`}>Canceladas</Text>
                     </TouchableOpacity>
                 </ScrollView>
             </View>
@@ -173,7 +173,7 @@ export default function Reservas() {
             <ScrollView className="flex-1 px-4 pt-6 pb-20" showsVerticalScrollIndicator={false}>
                 {filteredReservas.length === 0 ? (
                     <View className="items-center justify-center mt-10">
-                        <Text className="text-gray-500 text-center">No hay reservaciones en esta sección.</Text>
+                        <Text className="text-gray-500 dark:text-gray-400 text-center font-sans">No hay reservaciones en esta sección.</Text>
                     </View>
                 ) : (
                     filteredReservas.map((reserva) => {

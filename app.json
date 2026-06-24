@@ -36,6 +36,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.robert_29rh.crystalcove"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d75e08e7-41c5-4df7-8c47-9c91ce918468"
       }
     }
   }

@@ -94,14 +94,14 @@ export default function RoomDetails() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+        <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-bg" edges={['top']}>
             
             {/* Header con botón atrás */}
-            <View className="flex-row items-center px-4 py-3 bg-white border-b border-gray-100">
+            <View className="flex-row items-center px-4 py-3 bg-white dark:bg-dark-surface border-b border-gray-200 dark:border-dark-surfaceAlt">
                 <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3 p-2">
-                    <Ionicons name="arrow-back" size={24} color="#172554" />
+                    <Ionicons name="arrow-back" size={24} color="#d4af37" />
                 </TouchableOpacity>
-                <Text className="text-xl font-bold text-blue-950 flex-1" numberOfLines={1}>{room.title}</Text>
+                <Text className="text-xl font-bold text-blue-950 dark:text-gold flex-1 font-sans" numberOfLines={1}>{room.title}</Text>
             </View>
 
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -114,34 +114,34 @@ export default function RoomDetails() {
                         ))}
                     </ScrollView>
                     <View className="absolute bottom-3 right-3 bg-black/50 px-3 py-1 rounded-full">
-                        <Text className="text-white text-xs font-bold">1 / 3</Text>
+                        <Text className="text-gray-800 dark:text-white text-xs font-bold font-sans">1 / 3</Text>
                     </View>
                 </View>
 
                 {/* Detalles de la habitación */}
                 <View className="px-4 py-6">
                     <View className="flex-row justify-between items-start mb-2">
-                        <Text className="text-2xl font-serif text-blue-950 flex-1 mr-4">{room.title}</Text>
-                        <Text className="text-xl font-bold text-green-600">${room.price} <Text className="text-sm font-normal text-gray-500">/noche</Text></Text>
+                        <Text className="text-2xl font-serif text-blue-950 dark:text-gold flex-1 mr-4">{room.title}</Text>
+                        <Text className="text-xl font-bold text-blue-950 dark:text-gold font-sans">${room.price} <Text className="text-sm font-normal text-gray-500 dark:text-gray-400 font-sans">/noche</Text></Text>
                     </View>
-                    <Text className="text-gray-500 text-base leading-relaxed mb-6">{room.description}</Text>
+                    <Text className="text-gray-500 dark:text-gray-400 text-base leading-relaxed mb-6 font-sans">{room.description}</Text>
 
                     {/* Qué incluye */}
-                    <Text className="text-lg font-bold text-blue-950 mb-4">¿Qué incluye tu habitación?</Text>
-                    <View className="bg-gray-50 p-4 rounded-xl border border-gray-100 mb-8">
+                    <Text className="text-lg font-bold text-blue-950 dark:text-gold mb-4 font-sans">¿Qué incluye tu habitación?</Text>
+                    <View className="bg-dark-bg p-4 rounded-xl border border-gray-200 dark:border-dark-surfaceAlt mb-8">
                         {room.amenities.map((amenity: string, idx: number) => (
                             <View key={idx} className="flex-row items-center mb-3">
                                 <Ionicons name="checkmark-circle" size={20} color="#16a34a" className="mr-3" />
-                                <Text className="text-gray-700">{amenity}</Text>
+                                <Text className="text-gray-700 dark:text-gray-300 font-sans">{amenity}</Text>
                             </View>
                         ))}
                     </View>
 
                     {/* Calendario */}
-                    <Text className="text-lg font-bold text-blue-950 mb-2">Selecciona tus fechas</Text>
-                    <Text className="text-gray-500 text-sm mb-4">Check-in / Check-out</Text>
+                    <Text className="text-lg font-bold text-blue-950 dark:text-gold mb-2 font-sans">Selecciona tus fechas</Text>
+                    <Text className="text-gray-500 dark:text-gray-400 text-sm mb-4 font-sans">Check-in / Check-out</Text>
                     
-                    <View className="border border-gray-200 rounded-xl overflow-hidden mb-8">
+                    <View className="border border-gray-200 dark:border-dark-surfaceAlt rounded-xl overflow-hidden mb-8">
                         <Calendar
                             onDayPress={onDayPress}
                             markedDates={getMarkedDates()}
@@ -155,26 +155,26 @@ export default function RoomDetails() {
                     </View>
 
                     {/* Servicios Extras */}
-                    <Text className="text-lg font-bold text-blue-950 mb-4">Servicios Extras</Text>
+                    <Text className="text-lg font-bold text-blue-950 dark:text-gold mb-4 font-sans">Servicios Extras</Text>
                     <View className="mb-8">
-                        <View className="flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100">
+                        <View className="flex-row justify-between items-center mb-4 pb-4 border-b border-gray-200 dark:border-dark-surfaceAlt">
                             <View className="flex-1 mr-4">
-                                <Text className="font-bold text-gray-800">Desayuno Gourmet a la cama</Text>
-                                <Text className="text-sm text-gray-500">+$35 por estadía</Text>
+                                <Text className="font-bold text-gray-800 dark:text-white font-sans">Desayuno Gourmet a la cama</Text>
+                                <Text className="text-sm text-gray-500 dark:text-gray-400 font-sans">+$35 por estadía</Text>
                             </View>
                             <Switch value={extraDesayuno} onValueChange={setExtraDesayuno} trackColor={{ false: '#d1d5db', true: '#93c5fd' }} thumbColor={extraDesayuno ? '#1d4ed8' : '#f3f4f6'} />
                         </View>
-                        <View className="flex-row justify-between items-center mb-4 pb-4 border-b border-gray-100">
+                        <View className="flex-row justify-between items-center mb-4 pb-4 border-b border-gray-200 dark:border-dark-surfaceAlt">
                             <View className="flex-1 mr-4">
-                                <Text className="font-bold text-gray-800">Masaje Relajante en Spa</Text>
-                                <Text className="text-sm text-gray-500">+$120 por persona</Text>
+                                <Text className="font-bold text-gray-800 dark:text-white font-sans">Masaje Relajante en Spa</Text>
+                                <Text className="text-sm text-gray-500 dark:text-gray-400 font-sans">+$120 por persona</Text>
                             </View>
                             <Switch value={extraSpa} onValueChange={setExtraSpa} trackColor={{ false: '#d1d5db', true: '#93c5fd' }} thumbColor={extraSpa ? '#1d4ed8' : '#f3f4f6'} />
                         </View>
                         <View className="flex-row justify-between items-center mb-4">
                             <View className="flex-1 mr-4">
-                                <Text className="font-bold text-gray-800">Transporte VIP Aeropuerto</Text>
-                                <Text className="text-sm text-gray-500">+$50 viaje redondo</Text>
+                                <Text className="font-bold text-gray-800 dark:text-white font-sans">Transporte VIP Aeropuerto</Text>
+                                <Text className="text-sm text-gray-500 dark:text-gray-400 font-sans">+$50 viaje redondo</Text>
                             </View>
                             <Switch value={extraTransporte} onValueChange={setExtraTransporte} trackColor={{ false: '#d1d5db', true: '#93c5fd' }} thumbColor={extraTransporte ? '#1d4ed8' : '#f3f4f6'} />
                         </View>
@@ -183,31 +183,31 @@ export default function RoomDetails() {
                 </View>
 
                 {/* Resumen Final */}
-                <View className="bg-slate-900 p-6 rounded-t-3xl mt-4">
-                    <Text className="text-white text-lg font-bold mb-4">Resumen de tu reserva</Text>
+                <View className="bg-gray-100 dark:bg-dark-surfaceAlt p-6 rounded-t-3xl mt-4">
+                    <Text className="text-gray-800 dark:text-white text-lg font-bold mb-4 font-sans">Resumen de tu reserva</Text>
                     
                     <View className="flex-row justify-between mb-2">
-                        <Text className="text-gray-300">Habitación</Text>
-                        <Text className="text-white font-bold">${room.price} / noche</Text>
+                        <Text className="text-gray-700 dark:text-gray-300 font-sans">Habitación</Text>
+                        <Text className="text-gray-800 dark:text-white font-bold font-sans">${room.price} / noche</Text>
                     </View>
                     
                     <View className="flex-row justify-between mb-2">
-                        <Text className="text-gray-300">Fechas seleccionadas</Text>
-                        <Text className="text-white font-bold">{checkIn ? `${checkIn} al ${checkOut || '?'}` : 'Ninguna'}</Text>
+                        <Text className="text-gray-700 dark:text-gray-300 font-sans">Fechas seleccionadas</Text>
+                        <Text className="text-gray-800 dark:text-white font-bold font-sans">{checkIn ? `${checkIn} al ${checkOut || '?'}` : 'Ninguna'}</Text>
                     </View>
 
                     <View className="flex-row justify-between mb-4 border-b border-gray-700 pb-4">
-                        <Text className="text-gray-300">Servicios Extra</Text>
-                        <Text className="text-white font-bold">${(extraDesayuno ? 35 : 0) + (extraSpa ? 120 : 0) + (extraTransporte ? 50 : 0)}</Text>
+                        <Text className="text-gray-700 dark:text-gray-300 font-sans">Servicios Extra</Text>
+                        <Text className="text-gray-800 dark:text-white font-bold font-sans">${(extraDesayuno ? 35 : 0) + (extraSpa ? 120 : 0) + (extraTransporte ? 50 : 0)}</Text>
                     </View>
 
                     <View className="flex-row justify-between items-center mb-6">
-                        <Text className="text-white text-xl font-bold">Total Estimado</Text>
-                        <Text className="text-green-400 text-2xl font-bold">${calcularTotal()}</Text>
+                        <Text className="text-gray-800 dark:text-white text-xl font-bold font-sans">Total Estimado</Text>
+                        <Text className="text-blue-950 dark:text-gold-light text-2xl font-bold font-sans">${calcularTotal()}</Text>
                     </View>
 
                     <TouchableOpacity 
-                        className={`py-4 rounded-xl items-center ${isSaving ? 'bg-blue-400' : 'bg-blue-600'}`}
+                        className={`py-4 rounded-xl items-center ${isSaving ? 'bg-blue-400' : 'bg-gold'}`}
                         disabled={isSaving}
                         onPress={async () => {
                             if (!session || !user) {
@@ -294,7 +294,7 @@ export default function RoomDetails() {
                             }
                         }}
                     >
-                        <Text className="text-white font-bold text-lg">{isSaving ? 'Procesando...' : 'Confirmar Reserva'}</Text>
+                        <Text className="text-gray-800 dark:text-white font-bold text-lg font-sans">{isSaving ? 'Procesando...' : 'Confirmar Reserva'}</Text>
                     </TouchableOpacity>
                 </View>
 

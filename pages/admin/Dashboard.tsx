@@ -64,9 +64,9 @@ export default function Dashboard() {
 
   if (loading) {
       return (
-          <SafeAreaView className="flex-1 bg-gray-50 justify-center items-center">
-              <ActivityIndicator size="large" color="#172554" />
-              <Text className="mt-4 text-blue-950 font-bold">Cargando Dashboard...</Text>
+          <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-bg justify-center items-center">
+              <ActivityIndicator size="large" color="#d4af37" />
+              <Text className="mt-4 text-blue-950 dark:text-gold font-bold font-sans">Cargando Dashboard...</Text>
           </SafeAreaView>
       );
   }
@@ -129,10 +129,10 @@ export default function Dashboard() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
-      <View className="bg-white py-4 px-6 shadow-sm z-10 border-b border-gray-200">
-        <Text className="text-2xl font-serif font-bold text-blue-950">Panel de Control</Text>
-        <Text className="text-gray-500 text-sm">Estadísticas en tiempo real</Text>
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-bg" edges={['top']}>
+      <View className="bg-white dark:bg-dark-surface py-4 px-6 shadow-sm z-10 border-b border-gray-200 dark:border-dark-surfaceAlt">
+        <Text className="text-2xl font-serif font-bold text-blue-950 dark:text-gold">Panel de Control</Text>
+        <Text className="text-gray-500 dark:text-gray-400 text-sm font-sans">Estadísticas en tiempo real</Text>
       </View>
 
       <ScrollView 
@@ -141,41 +141,41 @@ export default function Dashboard() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchData} />}
       >
         <View className="flex-row flex-wrap justify-between mb-4">
-          <View className="w-[48%] bg-white rounded-2xl p-5 shadow-sm mb-4 border border-gray-100 items-center">
-            <View className="bg-blue-50 w-12 h-12 rounded-full items-center justify-center mb-3">
+          <View className="w-[48%] bg-white dark:bg-dark-surface rounded-2xl p-5 shadow-sm mb-4 border border-gray-200 dark:border-dark-surfaceAlt items-center">
+            <View className="bg-gray-100 dark:bg-dark-surfaceAlt w-12 h-12 rounded-full items-center justify-center mb-3">
                 <Ionicons name="people" size={24} color="#1d4ed8" />
             </View>
-            <Text className="text-xs text-gray-500 font-bold uppercase text-center mb-1">Total Usuarios</Text>
-            <Text className="text-2xl font-bold text-blue-950">{totalUsuarios}</Text>
+            <Text className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase text-center mb-1 font-sans">Total Usuarios</Text>
+            <Text className="text-2xl font-bold text-blue-950 dark:text-gold font-sans">{totalUsuarios}</Text>
           </View>
 
-          <View className="w-[48%] bg-white rounded-2xl p-5 shadow-sm mb-4 border border-gray-100 items-center">
+          <View className="w-[48%] bg-white dark:bg-dark-surface rounded-2xl p-5 shadow-sm mb-4 border border-gray-200 dark:border-dark-surfaceAlt items-center">
             <View className="bg-green-50 w-12 h-12 rounded-full items-center justify-center mb-3">
                 <Ionicons name="bed" size={24} color="#15803d" />
             </View>
-            <Text className="text-xs text-gray-500 font-bold uppercase text-center mb-1">En Estancia</Text>
-            <Text className="text-2xl font-bold text-green-700">{huespedesEnEstancia}</Text>
+            <Text className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase text-center mb-1 font-sans">En Estancia</Text>
+            <Text className="text-2xl font-bold text-green-700 font-sans">{huespedesEnEstancia}</Text>
           </View>
 
-          <View className="w-[48%] bg-white rounded-2xl p-5 shadow-sm mb-4 border border-gray-100 items-center">
+          <View className="w-[48%] bg-white dark:bg-dark-surface rounded-2xl p-5 shadow-sm mb-4 border border-gray-200 dark:border-dark-surfaceAlt items-center">
             <View className="bg-yellow-50 w-12 h-12 rounded-full items-center justify-center mb-3">
                 <Ionicons name="calendar-outline" size={24} color="#a16207" />
             </View>
-            <Text className="text-xs text-gray-500 font-bold uppercase text-center mb-1">Confirmadas</Text>
-            <Text className="text-2xl font-bold text-yellow-700">{totalConfirmadas}</Text>
+            <Text className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase text-center mb-1 font-sans">Confirmadas</Text>
+            <Text className="text-2xl font-bold text-yellow-700 font-sans">{totalConfirmadas}</Text>
           </View>
 
-          <View className="w-[48%] bg-white rounded-2xl p-5 shadow-sm mb-4 border border-gray-100 items-center">
+          <View className="w-[48%] bg-white dark:bg-dark-surface rounded-2xl p-5 shadow-sm mb-4 border border-gray-200 dark:border-dark-surfaceAlt items-center">
             <View className="bg-purple-50 w-12 h-12 rounded-full items-center justify-center mb-3">
                 <Ionicons name="cash-outline" size={24} color="#7e22ce" />
             </View>
-            <Text className="text-xs text-gray-500 font-bold uppercase text-center mb-1">Ticket Promedio</Text>
-            <Text className="text-xl font-bold text-purple-700">${ingresoPromedio.toFixed(2)}</Text>
+            <Text className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase text-center mb-1 font-sans">Ticket Promedio</Text>
+            <Text className="text-xl font-bold text-purple-700 font-sans">${ingresoPromedio.toFixed(2)}</Text>
           </View>
         </View>
 
         {/* Gráfica Circular (Donut) */}
-        <View className="bg-white rounded-3xl p-6 shadow-sm mb-6 border border-gray-100 flex-row items-center">
+        <View className="bg-white dark:bg-dark-surface rounded-3xl p-6 shadow-sm mb-6 border border-gray-200 dark:border-dark-surfaceAlt flex-row items-center">
             <View className="mr-6 items-center justify-center">
                 <Svg width={size} height={size}>
                     <G rotation="-90" origin={`${center}, ${center}`}>
@@ -227,41 +227,41 @@ export default function Dashboard() {
                     </G>
                 </Svg>
                 <View className="absolute items-center justify-center" style={{ width: size, height: size }}>
-                    <Text className="text-xl font-bold text-blue-950">{reservaciones.length}</Text>
-                    <Text className="text-[10px] text-gray-500 font-bold uppercase">Total</Text>
+                    <Text className="text-xl font-bold text-blue-950 dark:text-gold font-sans">{reservaciones.length}</Text>
+                    <Text className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase font-sans">Total</Text>
                 </View>
             </View>
 
             {/* Leyenda a la derecha */}
             <View className="flex-1 justify-center">
-                <Text className="text-sm font-bold text-gray-800 mb-3">Distribución Total</Text>
+                <Text className="text-sm font-bold text-gray-800 dark:text-white mb-3 font-sans">Distribución Total</Text>
                 <View className="mb-2 flex-row items-center justify-between">
                     <View className="flex-row items-center">
                         <View className="w-3 h-3 rounded-full bg-green-500 mr-2" />
-                        <Text className="text-xs text-gray-600 font-medium">Estancia</Text>
+                        <Text className="text-xs text-gray-600 font-medium font-sans">Estancia</Text>
                     </View>
-                    <Text className="text-xs font-bold text-gray-800">{pEnEstancia.toFixed(0)}%</Text>
+                    <Text className="text-xs font-bold text-gray-800 dark:text-white font-sans">{pEnEstancia.toFixed(0)}%</Text>
                 </View>
                 <View className="mb-2 flex-row items-center justify-between">
                     <View className="flex-row items-center">
                         <View className="w-3 h-3 rounded-full bg-yellow-500 mr-2" />
-                        <Text className="text-xs text-gray-600 font-medium">Confirmadas</Text>
+                        <Text className="text-xs text-gray-600 font-medium font-sans">Confirmadas</Text>
                     </View>
-                    <Text className="text-xs font-bold text-gray-800">{pConfirmadas.toFixed(0)}%</Text>
+                    <Text className="text-xs font-bold text-gray-800 dark:text-white font-sans">{pConfirmadas.toFixed(0)}%</Text>
                 </View>
                 <View className="mb-2 flex-row items-center justify-between">
                     <View className="flex-row items-center">
                         <View className="w-3 h-3 rounded-full bg-blue-400 mr-2" />
-                        <Text className="text-xs text-gray-600 font-medium">Pasadas</Text>
+                        <Text className="text-xs text-gray-600 font-medium font-sans">Pasadas</Text>
                     </View>
-                    <Text className="text-xs font-bold text-gray-800">{pPasadas.toFixed(0)}%</Text>
+                    <Text className="text-xs font-bold text-gray-800 dark:text-white font-sans">{pPasadas.toFixed(0)}%</Text>
                 </View>
                 <View className="flex-row items-center justify-between">
                     <View className="flex-row items-center">
                         <View className="w-3 h-3 rounded-full bg-red-400 mr-2" />
-                        <Text className="text-xs text-gray-600 font-medium">Canceladas</Text>
+                        <Text className="text-xs text-gray-600 font-medium font-sans">Canceladas</Text>
                     </View>
-                    <Text className="text-xs font-bold text-gray-800">{pCanceladas.toFixed(0)}%</Text>
+                    <Text className="text-xs font-bold text-gray-800 dark:text-white font-sans">{pCanceladas.toFixed(0)}%</Text>
                 </View>
             </View>
         </View>
@@ -269,36 +269,36 @@ export default function Dashboard() {
         {/* Pestañas horizontales */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
             <TouchableOpacity 
-                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'en_estancia' ? 'bg-blue-950' : 'bg-gray-200'}`}
+                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'en_estancia' ? 'bg-gold-dark' : 'bg-gray-200'}`}
                 onPress={() => setActiveTab('en_estancia')}
             >
-                <Text className={`font-bold ${activeTab === 'en_estancia' ? 'text-white' : 'text-gray-600'}`}>En Estancia</Text>
+                <Text className={`font-bold ${activeTab === 'en_estancia' ? 'text-gray-800 dark:text-white' : 'text-gray-600'}`}>En Estancia</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'confirmadas' ? 'bg-blue-950' : 'bg-gray-200'}`}
+                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'confirmadas' ? 'bg-gold-dark' : 'bg-gray-200'}`}
                 onPress={() => setActiveTab('confirmadas')}
             >
-                <Text className={`font-bold ${activeTab === 'confirmadas' ? 'text-white' : 'text-gray-600'}`}>Confirmadas</Text>
+                <Text className={`font-bold ${activeTab === 'confirmadas' ? 'text-gray-800 dark:text-white' : 'text-gray-600'}`}>Confirmadas</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'pasadas' ? 'bg-blue-950' : 'bg-gray-200'}`}
+                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'pasadas' ? 'bg-gold-dark' : 'bg-gray-200'}`}
                 onPress={() => setActiveTab('pasadas')}
             >
-                <Text className={`font-bold ${activeTab === 'pasadas' ? 'text-white' : 'text-gray-600'}`}>Pasadas</Text>
+                <Text className={`font-bold ${activeTab === 'pasadas' ? 'text-gray-800 dark:text-white' : 'text-gray-600'}`}>Pasadas</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'canceladas' ? 'bg-blue-950' : 'bg-gray-200'}`}
+                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'canceladas' ? 'bg-gold-dark' : 'bg-gray-200'}`}
                 onPress={() => setActiveTab('canceladas')}
             >
-                <Text className={`font-bold ${activeTab === 'canceladas' ? 'text-white' : 'text-gray-600'}`}>Canceladas</Text>
+                <Text className={`font-bold ${activeTab === 'canceladas' ? 'text-gray-800 dark:text-white' : 'text-gray-600'}`}>Canceladas</Text>
             </TouchableOpacity>
         </ScrollView>
 
         {/* Buscador */}
-        <View className="flex-row items-center bg-white rounded-xl px-4 py-3 shadow-sm border border-gray-100 mb-6">
+        <View className="flex-row items-center bg-white dark:bg-dark-surface rounded-xl px-4 py-3 shadow-sm border border-gray-200 dark:border-dark-surfaceAlt mb-6">
             <Ionicons name="search" size={20} color="#9ca3af" className="mr-2" />
             <TextInput 
-                className="flex-1 text-base text-gray-800"
+                className="flex-1 text-base text-gray-800 dark:text-white"
                 placeholder="Buscar por nombre, teléfono o ID..."
                 value={searchText}
                 onChangeText={setSearchText}
@@ -311,11 +311,11 @@ export default function Dashboard() {
         </View>
         
         {/* Lista de Reservaciones Filtradas */}
-        <View className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-10">
+        <View className="bg-white dark:bg-dark-surface rounded-3xl shadow-sm border border-gray-200 dark:border-dark-surfaceAlt overflow-hidden mb-10">
             {currentList.length === 0 ? (
                 <View className="p-8 items-center">
                     <Ionicons name="folder-open-outline" size={48} color="#cbd5e1" className="mb-2" />
-                    <Text className="text-gray-400 text-center">No hay reservaciones en esta categoría.</Text>
+                    <Text className="text-gray-500 dark:text-gray-400 text-center font-sans">No hay reservaciones en esta categoría.</Text>
                 </View>
             ) : (
                 currentList.map((reserva, index) => {
@@ -327,21 +327,21 @@ export default function Dashboard() {
                             className={`flex-row items-center p-4 ${index !== currentList.length - 1 ? 'border-b border-gray-50' : ''}`}
                             onPress={() => navigation.navigate('AdminUserDetails', { userId: reserva.id_usuario })}
                         >
-                            <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mr-4">
-                                <Text className="text-blue-800 font-bold text-lg">
+                            <View className="w-12 h-12 bg-gray-100 dark:bg-dark-surfaceAlt rounded-full items-center justify-center mr-4">
+                                <Text className="text-blue-800 font-bold text-lg font-sans">
                                     {user?.nombre_completo ? user.nombre_completo.charAt(0).toUpperCase() : 'U'}
                                 </Text>
                             </View>
                             <View className="flex-1">
-                                <Text className="text-base font-bold text-gray-800" numberOfLines={1}>
+                                <Text className="text-base font-bold text-gray-800 dark:text-white font-sans" numberOfLines={1}>
                                     {user?.nombre_completo || 'Sin nombre'}
                                 </Text>
-                                <Text className="text-xs text-gray-500">
+                                <Text className="text-xs text-gray-500 dark:text-gray-400 font-sans">
                                     {reserva.fecha_entrada} a {reserva.fecha_salida}
                                 </Text>
                             </View>
                             <View className="items-end justify-center">
-                                <Text className="text-xs font-bold text-blue-950 mb-1">${reserva.precio_total}</Text>
+                                <Text className="text-xs font-bold text-blue-950 dark:text-gold mb-1 font-sans">${reserva.precio_total}</Text>
                                 <Ionicons name="chevron-forward" size={20} color="#cbd5e1" />
                             </View>
                         </TouchableOpacity>

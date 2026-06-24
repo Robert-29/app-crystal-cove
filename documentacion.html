@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentación Oficial: Crystal Cove</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; line-height: 1.6; padding: 40px; margin: 0 auto; max-width: 900px; }
+        h1 { color: #1e3a8a; font-size: 32px; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 30px; }
+        h2 { color: #2563eb; font-size: 24px; margin-top: 40px; margin-bottom: 20px; }
+        p { font-size: 16px; margin-bottom: 20px; }
+        .mermaid { margin-bottom: 40px; text-align: center; }
+        .footer { text-align: center; margin-top: 60px; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Arquitectura y Flujos de la Aplicación: Crystal Cove</h1>
+    <p>Esta documentación técnica describe los flujos de secuencia exactos de las funcionalidades de la plataforma Crystal Cove, integrando el frontend en React Native (Expo) con el backend de Supabase y la pasarela de pagos de Stripe.</p>
+
+    <h2>1. Autenticación y Gestión de Perfiles</h2>
+    <p>El sistema utiliza Supabase Auth para manejar las identidades, sincronizando automáticamente el ID de usuario seguro con una tabla pública llamada <code>perfiles</code> para almacenar datos personales como el teléfono y el nombre.</p>
+    <div class="mermaid">
+    sequenceDiagram
+        participant U as Usuario
+        participant AuthContext as App (Auth Context)
+        participant Auth as Supabase Auth
+        participant DB as Base de Datos (perfiles)
+
+        opt Registro Nuevo
+            U->>AuthContext: Ingresa Email, Password, Nombre, Teléfono
+            AuthContext->>Auth: signUp(email, password)
+            Auth-->>AuthContext: Retorna UUID del Usuario
+            AuthContext->>DB: INSERT INTO perfiles (id, nombre_completo, telefono)
+            DB-->>AuthContext: Confirmación OK
+        end
+        
+        opt Inicio de Sesión
+            U->>AuthContext: Ingresa Email y Password
+            AuthContext->>Auth: signInWithPassword()
+            Auth-->>AuthContext: Retorna JWT (Sesión)
+            AuthContext->>AuthContext: Actualiza estado global y permite acceso
+        end
+        
+        opt Actualizar Perfil
+            U->>AuthContext: Navega a Perfil y edita datos
+            AuthContext->>DB: UPDATE perfiles SET nombre_completo, telefono
+            DB-->>AuthContext: Éxito
+        end
+    </div>
+
+    <h2>2. Flujo de Reservación y Pasarela de Pagos (Stripe)</h2>
+    <p>Este proceso crítico asegura que la reserva solo cambie a estado <strong>confirmada</strong> si el pago con Stripe se procesa exitosamente mediante la Edge Function.</p>
+    <div class="mermaid">
+    sequenceDiagram
+        participant H as Huésped (App)
+        participant DB as Base de Datos
+        participant Func as Edge Function
+        participant Stripe as Stripe API
+
+        H->>H: Toca "Confirmar Reserva"
+        H->>DB: Verifica sesión y disponibilidad
+        
+        H->>DB: INSERT en reservaciones (estado: 'pendiente')
+        DB-->>H: Retorna objeto Reserva (Incluye ID único)
+        
+        H->>Func: invoke('create-payment-intent', monto, reservaId)
+        Func->>Stripe: paymentIntents.create({amount, currency: mxn})
+        Stripe-->>Func: Retorna PaymentIntent Object
+        Func-->>H: Retorna {clientSecret}
+        
+        H->>H: initPaymentSheet(clientSecret)
+        H->>H: presentPaymentSheet() (Abre interfaz de tarjeta)
+        
+        alt Pago Cancelado o Fallido
+            H->>H: Muestra Alerta de Error. La reserva se queda 'pendiente'.
+        else Pago Exitoso
+            H->>DB: UPDATE reservaciones SET estado='confirmada', codigo_qr='QR-{id}'
+            DB-->>H: OK
+            H->>H: Redirige a pantalla de Mis Reservas
+        end
+    </div>
+
+    <h2>3. Escáner QR y Recepción (Administrador)</h2>
+    <p>Flujo nativo que permite a un administrador validar de forma segura un ticket generado y registrar la entrada o cancelación del huésped en las instalaciones.</p>
+    <div class="mermaid">
+    sequenceDiagram
+        participant A as Administrador
+        participant Cam as Cámara del Móvil
+        participant DB as Base de Datos
+
+        A->>Cam: Abre módulo de Escáner QR
+        Cam-->>A: Detecta cadena de texto (Ej: "QR-123...")
+        
+        A->>DB: SELECT reservaciones JOIN perfiles WHERE codigo_qr = detectado
+        DB-->>A: Retorna datos completos (Habitación, Nombre, Teléfono, Estado)
+        
+        A->>A: Renderiza 'Ticket de Admin' en Pantalla
+        
+        alt Toca "Marcar En Estancia"
+            A->>DB: UPDATE reservaciones SET estado='en_estancia' WHERE id
+            DB-->>A: Éxito
+        else Toca "Cancelar Reserva"
+            A->>DB: UPDATE reservaciones SET estado='cancelada' WHERE id
+            DB-->>A: Éxito
+        end
+        A->>A: Muestra alerta de éxito y reactiva la cámara
+    </div>
+
+    <h2>4. Dashboard Analítico (Administrador en Tiempo Real)</h2>
+    <p>El dashboard aprovecha Supabase Realtime (WebSockets) para mantener las gráficas y KPIs actualizados de manera inmediata cuando hay un cambio en la base de datos.</p>
+    <div class="mermaid">
+    sequenceDiagram
+        participant A as Admin (Dashboard)
+        participant RT as Supabase Realtime
+        participant DB as Base de Datos
+
+        A->>A: Abre pantalla de Dashboard
+        
+        Note right of A: 1. Carga Inicial
+        A->>DB: GET perfiles & reservaciones
+        DB-->>A: Retorna arrays de datos
+        A->>A: Calcula Métricas y Dibuja Gráfica de Anillo (SVG)
+        
+        Note right of A: 2. Suscripción a WebSockets
+        A->>RT: channel('admin_channel').on('postgres_changes')
+        RT-->>A: Conexión Establecida
+        
+        opt Cliente hace nueva reserva
+            DB->>RT: Evento UPDATE / INSERT
+            RT-->>A: Notifica cambios (payload)
+            A->>A: Re-ejecuta cálculos y actualiza el Dashboard sin recargar
+        end
+    </div>
+
+    <div class="footer">
+        Generado automáticamente con IA para el proyecto Crystal Cove. Todos los flujos reflejan la implementación real actual.
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>

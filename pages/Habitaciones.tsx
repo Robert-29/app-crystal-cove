@@ -85,53 +85,53 @@ export default function Habitaciones() {
     const navigation = useNavigation<any>();
 
     return (
-        <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+        <SafeAreaView className="flex-1 bg-gray-50 dark:bg-dark-bg" edges={['top']}>
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
                 
                 {/* ENCABEZADO */}
                 <View className="py-10 px-4 items-center">
-                    <Text className="text-3xl font-serif text-blue-950 mb-4 text-center">Nuestras Habitaciones</Text>
-                    <Text className="text-gray-500 text-center mb-10 px-4">
+                    <Text className="text-3xl font-serif text-blue-950 dark:text-gold mb-4 text-center">Nuestras Habitaciones</Text>
+                    <Text className="text-gray-500 dark:text-gray-400 text-center mb-10 px-4 font-sans">
                         Descubre el lujo y el confort en cada una de nuestras exclusivas habitaciones y suites
                     </Text>
 
                     {/* AMENIDADES INCLUIDAS */}
-                    <Text className="text-sm font-bold text-blue-950 mb-6 text-center">Todas nuestras habitaciones incluyen:</Text>
+                    <Text className="text-sm font-bold text-blue-950 dark:text-gold mb-6 text-center font-sans">Todas nuestras habitaciones incluyen:</Text>
                     <View className="flex-row flex-wrap justify-center w-full mb-8">
                         <View className="w-1/4 items-center px-2">
-                            <Ionicons name="bed-outline" size={24} color="#172554" className="mb-2" />
-                            <Text className="text-[10px] text-center text-blue-950">Mobiliario de lujo</Text>
+                            <Ionicons name="bed-outline" size={24} color="#d4af37" className="mb-2" />
+                            <Text className="text-[10px] text-center text-blue-950 dark:text-gold font-sans">Mobiliario de lujo</Text>
                         </View>
                         <View className="w-1/4 items-center px-2">
-                            <Ionicons name="thermometer-outline" size={24} color="#172554" className="mb-2" />
-                            <Text className="text-[10px] text-center text-blue-950">Control climático</Text>
+                            <Ionicons name="thermometer-outline" size={24} color="#d4af37" className="mb-2" />
+                            <Text className="text-[10px] text-center text-blue-950 dark:text-gold font-sans">Control climático</Text>
                         </View>
                         <View className="w-1/4 items-center px-2">
-                            <Ionicons name="wifi-outline" size={24} color="#172554" className="mb-2" />
-                            <Text className="text-[10px] text-center text-blue-950">Wi-Fi de alta velocidad</Text>
+                            <Ionicons name="wifi-outline" size={24} color="#d4af37" className="mb-2" />
+                            <Text className="text-[10px] text-center text-blue-950 dark:text-gold font-sans">Wi-Fi de alta velocidad</Text>
                         </View>
                         <View className="w-1/4 items-center px-2">
-                            <Ionicons name="sparkles-outline" size={24} color="#172554" className="mb-2" />
-                            <Text className="text-[10px] text-center text-blue-950">Amenidades premium</Text>
+                            <Ionicons name="sparkles-outline" size={24} color="#d4af37" className="mb-2" />
+                            <Text className="text-[10px] text-center text-blue-950 dark:text-gold font-sans">Amenidades premium</Text>
                         </View>
                     </View>
                 </View>
 
                 {/* LISTA DE HABITACIONES DINÁMICA */}
-                <View className="px-4 pb-10 bg-gray-50 pt-8">
+                <View className="px-4 pb-10 bg-dark-bg pt-8">
                     {ROOMS_DATA.map((room) => (
-                        <View key={room.id} className="w-full bg-white rounded-xl overflow-hidden mb-6 shadow-sm border border-gray-100">
+                        <View key={room.id} className="w-full bg-white dark:bg-dark-surface rounded-xl overflow-hidden mb-6 shadow-sm border border-gray-200 dark:border-dark-surfaceAlt">
                             <Image source={{ uri: room.images[0] }} className="w-full h-56" />
                             <View className="p-5">
-                                <Text className="font-bold text-blue-950 text-xl mb-2">{room.title}</Text>
-                                <Text className="text-gray-500 text-sm mb-4">{room.description}</Text>
+                                <Text className="font-bold text-blue-950 dark:text-gold text-xl mb-2 font-sans">{room.title}</Text>
+                                <Text className="text-gray-500 dark:text-gray-400 text-sm mb-4 font-sans">{room.description}</Text>
                                 <View className="flex-row justify-between items-center">
-                                    <Text className="text-green-600 font-bold text-lg">Desde ${room.price}/noche</Text>
+                                    <Text className="text-blue-950 dark:text-gold font-bold text-lg font-sans">Desde ${room.price}/noche</Text>
                                     <TouchableOpacity 
-                                        className="bg-blue-950 px-4 py-2 rounded-full"
+                                        className="bg-gold-dark px-4 py-2 rounded-full"
                                         onPress={() => navigation.navigate('RoomDetails', { roomId: room.id })}
                                     >
-                                        <Text className="text-white text-xs font-bold">Reservar</Text>
+                                        <Text className="text-gray-800 dark:text-white text-xs font-bold font-sans">Reservar</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
