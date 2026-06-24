@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, RefreshControl, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import Svg, { Circle, G } from 'react-native-svg';
 
 export default function Dashboard() {
   const navigation = useNavigation<any>();
@@ -11,13 +12,17 @@ export default function Dashboard() {
   const [reservaciones, setReservaciones] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  
+  // Nuevos estados para filtros
+  const [searchText, setSearchText] = useState('');
+  const [activeTab, setActiveTab] = useState<'en_estancia' | 'confirmadas' | 'pasadas' | 'canceladas'>('en_estancia');
 
   const fetchData = async () => {
     setRefreshing(true);
     try {
         const [perfilesRes, reservasRes] = await Promise.all([
             supabase.from('perfiles').select('*').order('fecha_registro', { ascending: false }),
-            supabase.from('reservaciones').select('*')
+            supabase.from('reservaciones').select('*').order('fecha_creacion', { ascending: false })
         ]);
 
         if (perfilesRes.error) throw perfilesRes.error;
@@ -66,15 +71,62 @@ export default function Dashboard() {
       );
   }
 
-  // Cálculos de estadísticas
-  const totalUsuarios = perfiles.length;
-  const huespedesEnEstancia = reservaciones.filter(r => r.estado === 'en_estancia').length;
-  const confirmadas = reservaciones.filter(r => r.estado === 'confirmada').length;
+  // Lógica de filtrado de reservaciones
+  const today = new Date().toISOString().split('T')[0];
   
-  const reservacionesValidas = reservaciones.filter(r => r.estado === 'completada' || r.estado === 'en_estancia' || r.estado === 'confirmada');
+  // Categorías
+  const enEstancia = reservaciones.filter(r => r.estado === 'en_estancia' && r.fecha_salida >= today);
+  const confirmadas = reservaciones.filter(r => r.estado === 'confirmada' && r.fecha_salida >= today);
+  const canceladas = reservaciones.filter(r => r.estado === 'cancelada');
+  const pasadas = reservaciones.filter(r => r.fecha_salida < today && r.estado !== 'cancelada');
+
+  // Cálculos de estadísticas superiores
+  const totalUsuarios = perfiles.length;
+  const huespedesEnEstancia = enEstancia.length;
+  const totalConfirmadas = confirmadas.length;
+  
+  const reservacionesValidas = [...enEstancia, ...confirmadas, ...pasadas];
   const ingresoPromedio = reservacionesValidas.length > 0 
       ? reservacionesValidas.reduce((acc, curr) => acc + (Number(curr.precio_total) || 0), 0) / reservacionesValidas.length 
       : 0;
+
+  // Datos para la gráfica de distribución
+  const totalGraph = reservaciones.length || 1; // Para evitar división por cero
+  const pEnEstancia = (enEstancia.length / totalGraph) * 100;
+  const pConfirmadas = (confirmadas.length / totalGraph) * 100;
+  const pPasadas = (pasadas.length / totalGraph) * 100;
+  const pCanceladas = (canceladas.length / totalGraph) * 100;
+
+  // Cálculos para el Donut Chart SVG
+  const radius = 50;
+  const strokeWidth = 20;
+  const center = radius + strokeWidth;
+  const size = center * 2;
+  const circumference = 2 * Math.PI * radius;
+
+  const dash1 = (pEnEstancia / 100) * circumference;
+  const dash2 = (pConfirmadas / 100) * circumference;
+  const dash3 = (pPasadas / 100) * circumference;
+  const dash4 = (pCanceladas / 100) * circumference;
+
+  // Determinar lista actual según pestaña
+  let currentList = [];
+  if (activeTab === 'en_estancia') currentList = enEstancia;
+  else if (activeTab === 'confirmadas') currentList = confirmadas;
+  else if (activeTab === 'pasadas') currentList = pasadas;
+  else if (activeTab === 'canceladas') currentList = canceladas;
+
+  // Filtrar por texto
+  if (searchText.trim() !== '') {
+      const lowerSearch = searchText.toLowerCase();
+      currentList = currentList.filter(reserva => {
+          const user = perfiles.find(p => p.id === reserva.id_usuario);
+          const userName = user?.nombre_completo?.toLowerCase() || '';
+          const userPhone = user?.telefono || '';
+          const resId = reserva.id.toLowerCase();
+          return userName.includes(lowerSearch) || userPhone.includes(lowerSearch) || resId.includes(lowerSearch);
+      });
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
@@ -88,7 +140,7 @@ export default function Dashboard() {
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchData} />}
       >
-        <View className="flex-row flex-wrap justify-between mb-6">
+        <View className="flex-row flex-wrap justify-between mb-4">
           <View className="w-[48%] bg-white rounded-2xl p-5 shadow-sm mb-4 border border-gray-100 items-center">
             <View className="bg-blue-50 w-12 h-12 rounded-full items-center justify-center mb-3">
                 <Ionicons name="people" size={24} color="#1d4ed8" />
@@ -110,7 +162,7 @@ export default function Dashboard() {
                 <Ionicons name="calendar-outline" size={24} color="#a16207" />
             </View>
             <Text className="text-xs text-gray-500 font-bold uppercase text-center mb-1">Confirmadas</Text>
-            <Text className="text-2xl font-bold text-yellow-700">{confirmadas}</Text>
+            <Text className="text-2xl font-bold text-yellow-700">{totalConfirmadas}</Text>
           </View>
 
           <View className="w-[48%] bg-white rounded-2xl p-5 shadow-sm mb-4 border border-gray-100 items-center">
@@ -122,41 +174,180 @@ export default function Dashboard() {
           </View>
         </View>
 
-        <Text className="text-lg font-bold text-blue-950 mb-4 px-2">Directorio de Usuarios</Text>
-        
-        <View className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-10">
-            {perfiles.map((user, index) => {
-                const userReservas = reservaciones.filter(r => r.id_usuario === user.id);
-                const hasActive = userReservas.some(r => r.estado === 'en_estancia' || r.estado === 'confirmada');
+        {/* Gráfica Circular (Donut) */}
+        <View className="bg-white rounded-3xl p-6 shadow-sm mb-6 border border-gray-100 flex-row items-center">
+            <View className="mr-6 items-center justify-center">
+                <Svg width={size} height={size}>
+                    <G rotation="-90" origin={`${center}, ${center}`}>
+                        {/* Fondo del círculo por si no hay reservas */}
+                        <Circle cx={center} cy={center} r={radius} stroke="#f3f4f6" strokeWidth={strokeWidth} fill="transparent" />
+                        
+                        {pEnEstancia > 0 && (
+                            <Circle
+                                cx={center} cy={center} r={radius}
+                                stroke="#22c55e" strokeWidth={strokeWidth} fill="transparent"
+                                strokeDasharray={`${circumference} ${circumference}`}
+                                strokeDashoffset={circumference - dash1}
+                                strokeLinecap="butt"
+                            />
+                        )}
+                        {pConfirmadas > 0 && (
+                            <Circle
+                                cx={center} cy={center} r={radius}
+                                stroke="#eab308" strokeWidth={strokeWidth} fill="transparent"
+                                strokeDasharray={`${circumference} ${circumference}`}
+                                strokeDashoffset={circumference - dash2}
+                                strokeLinecap="butt"
+                                origin={`${center}, ${center}`}
+                                rotation={(pEnEstancia / 100) * 360}
+                            />
+                        )}
+                        {pPasadas > 0 && (
+                            <Circle
+                                cx={center} cy={center} r={radius}
+                                stroke="#60a5fa" strokeWidth={strokeWidth} fill="transparent"
+                                strokeDasharray={`${circumference} ${circumference}`}
+                                strokeDashoffset={circumference - dash3}
+                                strokeLinecap="butt"
+                                origin={`${center}, ${center}`}
+                                rotation={((pEnEstancia + pConfirmadas) / 100) * 360}
+                            />
+                        )}
+                        {pCanceladas > 0 && (
+                            <Circle
+                                cx={center} cy={center} r={radius}
+                                stroke="#f87171" strokeWidth={strokeWidth} fill="transparent"
+                                strokeDasharray={`${circumference} ${circumference}`}
+                                strokeDashoffset={circumference - dash4}
+                                strokeLinecap="butt"
+                                origin={`${center}, ${center}`}
+                                rotation={((pEnEstancia + pConfirmadas + pPasadas) / 100) * 360}
+                            />
+                        )}
+                    </G>
+                </Svg>
+                <View className="absolute items-center justify-center" style={{ width: size, height: size }}>
+                    <Text className="text-xl font-bold text-blue-950">{reservaciones.length}</Text>
+                    <Text className="text-[10px] text-gray-500 font-bold uppercase">Total</Text>
+                </View>
+            </View>
 
-                return (
-                    <TouchableOpacity 
-                        key={user.id}
-                        className={`flex-row items-center p-4 ${index !== perfiles.length - 1 ? 'border-b border-gray-50' : ''}`}
-                        onPress={() => navigation.navigate('AdminUserDetails', { userId: user.id })}
-                    >
-                        <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mr-4">
-                            <Text className="text-blue-800 font-bold text-lg">
-                                {user.nombre_completo ? user.nombre_completo.charAt(0).toUpperCase() : 'U'}
-                            </Text>
-                        </View>
-                        <View className="flex-1">
-                            <Text className="text-base font-bold text-gray-800" numberOfLines={1}>
-                                {user.nombre_completo || 'Sin nombre'}
-                            </Text>
-                            <Text className="text-xs text-gray-500">
-                                {user.telefono || 'Sin teléfono'} • {userReservas.length} reservas
-                            </Text>
-                        </View>
-                        <View className="items-end justify-center">
-                            {hasActive && (
-                                <View className="w-3 h-3 rounded-full bg-green-500 mb-2" />
-                            )}
-                            <Ionicons name="chevron-forward" size={20} color="#cbd5e1" />
-                        </View>
-                    </TouchableOpacity>
-                );
-            })}
+            {/* Leyenda a la derecha */}
+            <View className="flex-1 justify-center">
+                <Text className="text-sm font-bold text-gray-800 mb-3">Distribución Total</Text>
+                <View className="mb-2 flex-row items-center justify-between">
+                    <View className="flex-row items-center">
+                        <View className="w-3 h-3 rounded-full bg-green-500 mr-2" />
+                        <Text className="text-xs text-gray-600 font-medium">Estancia</Text>
+                    </View>
+                    <Text className="text-xs font-bold text-gray-800">{pEnEstancia.toFixed(0)}%</Text>
+                </View>
+                <View className="mb-2 flex-row items-center justify-between">
+                    <View className="flex-row items-center">
+                        <View className="w-3 h-3 rounded-full bg-yellow-500 mr-2" />
+                        <Text className="text-xs text-gray-600 font-medium">Confirmadas</Text>
+                    </View>
+                    <Text className="text-xs font-bold text-gray-800">{pConfirmadas.toFixed(0)}%</Text>
+                </View>
+                <View className="mb-2 flex-row items-center justify-between">
+                    <View className="flex-row items-center">
+                        <View className="w-3 h-3 rounded-full bg-blue-400 mr-2" />
+                        <Text className="text-xs text-gray-600 font-medium">Pasadas</Text>
+                    </View>
+                    <Text className="text-xs font-bold text-gray-800">{pPasadas.toFixed(0)}%</Text>
+                </View>
+                <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center">
+                        <View className="w-3 h-3 rounded-full bg-red-400 mr-2" />
+                        <Text className="text-xs text-gray-600 font-medium">Canceladas</Text>
+                    </View>
+                    <Text className="text-xs font-bold text-gray-800">{pCanceladas.toFixed(0)}%</Text>
+                </View>
+            </View>
+        </View>
+
+        {/* Pestañas horizontales */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
+            <TouchableOpacity 
+                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'en_estancia' ? 'bg-blue-950' : 'bg-gray-200'}`}
+                onPress={() => setActiveTab('en_estancia')}
+            >
+                <Text className={`font-bold ${activeTab === 'en_estancia' ? 'text-white' : 'text-gray-600'}`}>En Estancia</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'confirmadas' ? 'bg-blue-950' : 'bg-gray-200'}`}
+                onPress={() => setActiveTab('confirmadas')}
+            >
+                <Text className={`font-bold ${activeTab === 'confirmadas' ? 'text-white' : 'text-gray-600'}`}>Confirmadas</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'pasadas' ? 'bg-blue-950' : 'bg-gray-200'}`}
+                onPress={() => setActiveTab('pasadas')}
+            >
+                <Text className={`font-bold ${activeTab === 'pasadas' ? 'text-white' : 'text-gray-600'}`}>Pasadas</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+                className={`px-4 py-2 rounded-full mr-2 ${activeTab === 'canceladas' ? 'bg-blue-950' : 'bg-gray-200'}`}
+                onPress={() => setActiveTab('canceladas')}
+            >
+                <Text className={`font-bold ${activeTab === 'canceladas' ? 'text-white' : 'text-gray-600'}`}>Canceladas</Text>
+            </TouchableOpacity>
+        </ScrollView>
+
+        {/* Buscador */}
+        <View className="flex-row items-center bg-white rounded-xl px-4 py-3 shadow-sm border border-gray-100 mb-6">
+            <Ionicons name="search" size={20} color="#9ca3af" className="mr-2" />
+            <TextInput 
+                className="flex-1 text-base text-gray-800"
+                placeholder="Buscar por nombre, teléfono o ID..."
+                value={searchText}
+                onChangeText={setSearchText}
+            />
+            {searchText !== '' && (
+                <TouchableOpacity onPress={() => setSearchText('')}>
+                    <Ionicons name="close-circle" size={20} color="#cbd5e1" />
+                </TouchableOpacity>
+            )}
+        </View>
+        
+        {/* Lista de Reservaciones Filtradas */}
+        <View className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-10">
+            {currentList.length === 0 ? (
+                <View className="p-8 items-center">
+                    <Ionicons name="folder-open-outline" size={48} color="#cbd5e1" className="mb-2" />
+                    <Text className="text-gray-400 text-center">No hay reservaciones en esta categoría.</Text>
+                </View>
+            ) : (
+                currentList.map((reserva, index) => {
+                    const user = perfiles.find(p => p.id === reserva.id_usuario);
+                    
+                    return (
+                        <TouchableOpacity 
+                            key={reserva.id}
+                            className={`flex-row items-center p-4 ${index !== currentList.length - 1 ? 'border-b border-gray-50' : ''}`}
+                            onPress={() => navigation.navigate('AdminUserDetails', { userId: reserva.id_usuario })}
+                        >
+                            <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mr-4">
+                                <Text className="text-blue-800 font-bold text-lg">
+                                    {user?.nombre_completo ? user.nombre_completo.charAt(0).toUpperCase() : 'U'}
+                                </Text>
+                            </View>
+                            <View className="flex-1">
+                                <Text className="text-base font-bold text-gray-800" numberOfLines={1}>
+                                    {user?.nombre_completo || 'Sin nombre'}
+                                </Text>
+                                <Text className="text-xs text-gray-500">
+                                    {reserva.fecha_entrada} a {reserva.fecha_salida}
+                                </Text>
+                            </View>
+                            <View className="items-end justify-center">
+                                <Text className="text-xs font-bold text-blue-950 mb-1">${reserva.precio_total}</Text>
+                                <Ionicons name="chevron-forward" size={20} color="#cbd5e1" />
+                            </View>
+                        </TouchableOpacity>
+                    );
+                })
+            )}
         </View>
       </ScrollView>
     </SafeAreaView>
