@@ -5,6 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Calendar } from 'react-native-calendars';
 import { ROOMS_DATA } from './Habitaciones';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 const { width } = Dimensions.get('window');
 
@@ -16,9 +18,13 @@ export default function RoomDetails() {
     const { roomId } = route.params || {};
     const room = ROOMS_DATA.find(r => r.id === roomId) || ROOMS_DATA[0];
 
+    // Auth context
+    const { session, user } = useAuth();
+
     // Estados
     const [checkIn, setCheckIn] = useState<string>('');
     const [checkOut, setCheckOut] = useState<string>('');
+    const [isSaving, setIsSaving] = useState(false);
     
     // Servicios Extras
     const [extraDesayuno, setExtraDesayuno] = useState(false);
@@ -189,16 +195,66 @@ export default function RoomDetails() {
                     </View>
 
                     <TouchableOpacity 
-                        className="bg-blue-600 py-4 rounded-xl items-center"
-                        onPress={() => {
-                            if(!checkIn || !checkOut) {
+                        className={`py-4 rounded-xl items-center ${isSaving ? 'bg-blue-400' : 'bg-blue-600'}`}
+                        disabled={isSaving}
+                        onPress={async () => {
+                            if (!session || !user) {
+                                Alert.alert("Inicia sesión", "Debes iniciar sesión para hacer una reservación.", [
+                                    { text: "Cancelar", style: "cancel" },
+                                    { text: "Ir a Login", onPress: () => navigation.navigate('Perfil') }
+                                ]);
+                                return;
+                            }
+                            if (!checkIn || !checkOut) {
                                 Alert.alert("Faltan fechas", "Por favor selecciona una fecha de Check-in y Check-out.");
-                            } else {
-                                Alert.alert("¡Reserva confirmada!", "Tu reserva ha sido procesada con éxito.");
+                                return;
+                            }
+                            
+                            setIsSaving(true);
+                            try {
+                                // 1. Buscar una habitación real en la base de datos
+                                const { data: dbRooms } = await supabase.from('habitaciones').select('id').limit(1);
+                                const dbRoomId = dbRooms && dbRooms.length > 0 ? dbRooms[0].id : null;
+
+                                if (!dbRoomId) {
+                                    Alert.alert("Error", "No hay habitaciones configuradas en la base de datos.");
+                                    setIsSaving(false);
+                                    return;
+                                }
+
+                                // 2. Guardar reservación
+                                const extrasInfo = `Extras: ${extraDesayuno ? 'Desayuno, ' : ''}${extraSpa ? 'Spa, ' : ''}${extraTransporte ? 'Transporte' : ''}`;
+                                
+                                const { data: nuevaReserva, error } = await supabase.from('reservaciones').insert({
+                                    id_usuario: user.id,
+                                    id_habitacion: dbRoomId,
+                                    fecha_entrada: checkIn,
+                                    fecha_salida: checkOut,
+                                    numero_huespedes: 1, // o el número real si lo añades
+                                    precio_total: calcularTotal(),
+                                    estado: 'confirmada',
+                                    notas: `Habitación: ${room.title} | ${extrasInfo}`
+                                }).select().single();
+
+                                if (error) {
+                                    throw error;
+                                }
+
+                                // 3. Generar un código QR basado en el ID de la reserva y guardarlo
+                                const qrCodeStr = `QR-${nuevaReserva.id}`;
+                                await supabase.from('reservaciones').update({ codigo_qr: qrCodeStr }).eq('id', nuevaReserva.id);
+
+                                Alert.alert("¡Reserva confirmada!", "Tu reserva ha sido procesada con éxito.", [
+                                    { text: "Ver mis reservaciones", onPress: () => navigation.navigate('Reservas') }
+                                ]);
+                            } catch (error: any) {
+                                Alert.alert("Error al reservar", error.message);
+                            } finally {
+                                setIsSaving(false);
                             }
                         }}
                     >
-                        <Text className="text-white font-bold text-lg">Confirmar Reserva</Text>
+                        <Text className="text-white font-bold text-lg">{isSaving ? 'Procesando...' : 'Confirmar Reserva'}</Text>
                     </TouchableOpacity>
                 </View>
 

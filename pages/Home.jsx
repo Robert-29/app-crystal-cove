@@ -272,7 +272,7 @@ export default function Home() {
                             <View className="w-16 h-16 rounded-full bg-blue-100 mb-4 justify-center items-center overflow-hidden">
                                 <Image source={{ uri: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80' }} className="w-full h-full" />
                             </View>
-                            <Text className="text-center text-sm text-gray-500 italic mb-4">"Una experiencia inolvidable. El servicio y las instalaciones superaron todas mis expectativas."</Text>
+                            <Text className="text-center text-sm text-gray-500 italic mb-4">&quot;Una experiencia inolvidable. El servicio y las instalaciones superaron todas mis expectativas.&quot;</Text>
                             <Text className="font-bold text-blue-950 text-sm">María González</Text>
                             <Text className="text-xs text-gray-400">Huésped Frecuente</Text>
                         </View>
@@ -280,7 +280,7 @@ export default function Home() {
                             <View className="w-16 h-16 rounded-full bg-blue-100 mb-4 justify-center items-center overflow-hidden">
                                 <Image source={{ uri: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80' }} className="w-full h-full" />
                             </View>
-                            <Text className="text-center text-sm text-gray-500 italic mb-4">"El mejor hotel para combinar trabajo y descanso. El ambiente es perfecto para la concentración."</Text>
+                            <Text className="text-center text-sm text-gray-500 italic mb-4">&quot;El mejor hotel para combinar trabajo y descanso. El ambiente es perfecto para la concentración.&quot;</Text>
                             <Text className="font-bold text-blue-950 text-sm">Carlos Ruiz</Text>
                             <Text className="text-xs text-gray-400">Viajero de Negocios</Text>
                         </View>
@@ -288,7 +288,7 @@ export default function Home() {
                             <View className="w-16 h-16 rounded-full bg-blue-100 mb-4 justify-center items-center overflow-hidden">
                                 <Image source={{ uri: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80' }} className="w-full h-full" />
                             </View>
-                            <Text className="text-center text-sm text-gray-500 italic mb-4">"Nuestra estancia fue mágica. Cada detalle estaba cuidadosamente pensado para hacer nuestra experiencia especial."</Text>
+                            <Text className="text-center text-sm text-gray-500 italic mb-4">&quot;Nuestra estancia fue mágica. Cada detalle estaba cuidadosamente pensado para hacer nuestra experiencia especial.&quot;</Text>
                             <Text className="font-bold text-blue-950 text-sm">Ana Martínez</Text>
                             <Text className="text-xs text-gray-400">Luna de Miel</Text>
                         </View>
