@@ -7,6 +7,7 @@ import { Calendar } from 'react-native-calendars';
 import { ROOMS_DATA } from './Habitaciones';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import { useStripe } from '@stripe/stripe-react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -25,6 +26,17 @@ export default function RoomDetails() {
     const [checkIn, setCheckIn] = useState<string>('');
     const [checkOut, setCheckOut] = useState<string>('');
     const [isSaving, setIsSaving] = useState(false);
+    
+    // Stripe
+    const { initPaymentSheet, presentPaymentSheet } = useStripe();
+
+    const fetchPaymentSheetParams = async (amount: number, reservaId: string) => {
+        const { data, error } = await supabase.functions.invoke('create-payment-intent', {
+            body: { amount, reservaId }
+        });
+        if (error) throw new Error('Error al conectar con la pasarela de pagos.');
+        return data;
+    };
     
     // Servicios Extras
     const [extraDesayuno, setExtraDesayuno] = useState(false);
@@ -222,17 +234,18 @@ export default function RoomDetails() {
                                     return;
                                 }
 
-                                // 2. Guardar reservación
+                                // 2. Guardar reservación como pendiente
                                 const extrasInfo = `Extras: ${extraDesayuno ? 'Desayuno, ' : ''}${extraSpa ? 'Spa, ' : ''}${extraTransporte ? 'Transporte' : ''}`;
+                                const totalPagar = calcularTotal();
                                 
                                 const { data: nuevaReserva, error } = await supabase.from('reservaciones').insert({
                                     id_usuario: user.id,
                                     id_habitacion: dbRoomId,
                                     fecha_entrada: checkIn,
                                     fecha_salida: checkOut,
-                                    numero_huespedes: 1, // o el número real si lo añades
-                                    precio_total: calcularTotal(),
-                                    estado: 'confirmada',
+                                    numero_huespedes: 1, 
+                                    precio_total: totalPagar,
+                                    estado: 'pendiente', // Primero queda pendiente de pago
                                     notas: `Habitación: ${room.title} | ${extrasInfo}`
                                 }).select().single();
 
@@ -240,15 +253,42 @@ export default function RoomDetails() {
                                     throw error;
                                 }
 
-                                // 3. Generar un código QR basado en el ID de la reserva y guardarlo
-                                const qrCodeStr = `QR-${nuevaReserva.id}`;
-                                await supabase.from('reservaciones').update({ codigo_qr: qrCodeStr }).eq('id', nuevaReserva.id);
+                                // 3. Llamar a Stripe Edge Function
+                                const { clientSecret } = await fetchPaymentSheetParams(totalPagar, nuevaReserva.id);
 
-                                Alert.alert("¡Reserva confirmada!", "Tu reserva ha sido procesada con éxito.", [
-                                    { text: "Ver mis reservaciones", onPress: () => navigation.navigate('Reservas') }
+                                // 4. Inicializar Payment Sheet
+                                const { error: initError } = await initPaymentSheet({
+                                    merchantDisplayName: 'Crystal Cove Resort',
+                                    paymentIntentClientSecret: clientSecret,
+                                    defaultBillingDetails: {
+                                        name: user.user_metadata?.full_name || 'Huésped',
+                                    }
+                                });
+
+                                if (initError) {
+                                    throw initError;
+                                }
+
+                                // 5. Presentar hoja de pago
+                                const { error: paymentError } = await presentPaymentSheet();
+
+                                if (paymentError) {
+                                    Alert.alert("Pago cancelado", "Tu reservación ha quedado en estado pendiente en tu carrito/historial.");
+                                    return;
+                                }
+
+                                // 6. Pago Exitoso -> Generar QR y Confirmar
+                                const qrCodeStr = `QR-${nuevaReserva.id}`;
+                                await supabase.from('reservaciones').update({ 
+                                    estado: 'confirmada',
+                                    codigo_qr: qrCodeStr 
+                                }).eq('id', nuevaReserva.id);
+
+                                Alert.alert("¡Reserva confirmada!", "El pago se acreditó y tu reserva está lista.", [
+                                    { text: "Ver mis tickets", onPress: () => navigation.navigate('Reservas') }
                                 ]);
                             } catch (error: any) {
-                                Alert.alert("Error al reservar", error.message);
+                                Alert.alert("Error en el pago", error.message || "No se pudo procesar la reservación.");
                             } finally {
                                 setIsSaving(false);
                             }
